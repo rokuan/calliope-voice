@@ -1,0 +1,115 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF"
+    tools:context=".MainActivity">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/main_color">
+        <LinearLayout
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="2dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            >
+            <ImageView
+                android:background="#FFFFFF"
+                android:padding="5dp"
+                android:src="@android:drawable/presence_audio_online"
+                android:layout_margin="5dp"
+                android:layout_width="50dp"
+                android:layout_height="40dp" />
+            <ImageView
+                android:background="#FFFFFF"
+                android:padding="5dp"
+                android:src="@android:drawable/presence_video_online"
+                android:layout_margin="5dp"
+                android:layout_width="50dp"
+                android:layout_height="40dp" />
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/module_tab"
+            android:visibility="invisible"
+            android:orientation="horizontal"
+            android:background="#FFFFFF"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/module_title"
+                android:gravity="center"
+                android:textColor="#000000"
+                android:paddingTop="2dp"
+                android:paddingBottom="2dp"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:background="#FFFFFF"
+                android:singleLine="true"
+                android:ellipsize="marquee"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
+            <ImageButton
+                android:background="#FFFFFF"
+                android:padding="10dp"
+                android:id="@+id/close_module"
+                android:src="@android:drawable/ic_menu_close_clear_cancel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        </ListView>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:gravity="bottom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/calliope_message"
+            android:background="@color/main_color"
+            android:text="Bienvenue dans Calliope"
+            android:textColor="#FFFFFF"
+            android:padding="5dp"
+            android:gravity="center_vertical|left"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:minHeight="30dp"
+            android:layout_height="wrap_content" />
+
+        <LinearLayout
+            android:gravity="center"
+            android:background="@color/main_color"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="3dp">
+            <LinearLayout
+                android:gravity="center"
+                android:background="#FFFFFF"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <ImageButton
+                    android:padding="5dp"
+                    android:background="@null"
+                    android:id="@+id/speech_activate"
+                    android:src="@android:drawable/ic_btn_speak_now"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>
