@@ -37,11 +37,13 @@ public class CalliopeSQLiteOpenHelper extends SQLiteOpenHelper implements WordDa
     private static final int VERBS = 0;
     private static final int CONJUGATION = 1;
     private static final int WORDS = 2;
+    private static final int COUNTRIES = 3;
 
     private static final String[] tables = new String[]{
             "verbs",
             "conjugation",
-            "words"
+            "words",
+            "countries"
     };
 
     private static final String[] excludeNumericalPosition = new String[]{
@@ -69,6 +71,17 @@ public class CalliopeSQLiteOpenHelper extends SQLiteOpenHelper implements WordDa
     public static final String WORD_NAME = "word_name";
     public static final String WORD_CATEGORY = "word_category";
 
+    //public static final String COUNTRY_ID = "country_id";
+    public static final String COUNTRY_CODE = "country_code";
+    public static final String COUNTRY_CODE_EXTENDED = "country_code_extended";
+    public static final String COUNTRY_NAME = "country_name";
+    /*public static final String CITY_ID = "city_id";
+    public static final String CITY_CODE = "city_code";
+    public static final String CITY_CODE_EXTENDED = "city_code_extended";
+    public static final String CITY_NAME = "city_name";*/
+    /*public static final String CITY_FR_NAME = "city_name";
+    public static final String CITY_EN_NAME = "city_en_name"*/
+
     private static final String VERB_QUERY = "CREATE TABLE " + tables[VERBS] + " (" +
             VERB_NAME + " TEXT PRIMARY KEY, " +
             VERB_ACTION + " TEXT NOT NULL, " +
@@ -87,6 +100,12 @@ public class CalliopeSQLiteOpenHelper extends SQLiteOpenHelper implements WordDa
             WORD_NAME + " TEXT PRIMARY KEY, " +
             WORD_CATEGORY + " TEXT NOT NULL" +
             ")";
+    private static final String COUNTRY_QUERY = "CREATE TABLE " + tables[COUNTRIES] + " (" +
+            COUNTRY_CODE + " VARCHAR(2) PRIMARY KEY, " +
+            COUNTRY_CODE_EXTENDED + " VARCHAR(3) UNIQUE, " +
+            COUNTRY_NAME + " TEXT NOT NULL" +
+            ")";
+
 
     private Context context;
 
@@ -235,44 +254,45 @@ public class CalliopeSQLiteOpenHelper extends SQLiteOpenHelper implements WordDa
         }
     }
 
-    public VerbConjugation getFirst(){
-        SQLiteDatabase db = this.getReadableDatabase();
-        //Cursor matchingResults = db.query(tables[CONJUGATION], null, "? LIKE " + CONJUGATION_VALUE + "% ORDER BY length(" + CONJUGATION_VERB + ")", new String[]{ conjugatedVerb }, null, null, null);
-        // TODO: modifier la requete pour qu'elle matche les accords en genre et en nombre
-        //Cursor matchingResults = db.query(tables[CONJUGATION], null, CONJUGATION_VALUE + " LIKE ? || '%'", new String[]{ conjugatedVerb }, null, null, null);
-        Cursor matchingResults = db.query(tables[CONJUGATION], null, null, null, null, null, null);
+    private void loadAllCountries(SQLiteDatabase db, String assetName){
+        AssetManager assets = this.context.getAssets();
+        InputStream is = null;
+        Scanner sc = null;
 
-        if(matchingResults.getCount() > 0){
-            matchingResults.moveToFirst();
-            VerbConjugation result = CalliopeVerbConjugation.buildFromCursor(matchingResults);
-            String verbName = matchingResults.getString(0);
+        try {
+            is = assets.open(assetName);
+            //sc = new Scanner(is, DataFile.DEFAULT_ENCODING);
+            sc = new Scanner(is);
 
-            matchingResults.close();
-            db.close();
+            while(sc.hasNextLine()){
+                String line = sc.nextLine();
+                String[] fields = line.split(DataFile.SEPARATOR);
+                String code = fields[0];
+                String extendedCode = fields[1];
+                String name = fields[2];
+                ContentValues values = new ContentValues();
 
-            result.setVerb(getVerb(verbName));
-            return result;
+                values.put(COUNTRY_CODE, code);
+                values.put(COUNTRY_CODE_EXTENDED, extendedCode);
+                values.put(COUNTRY_NAME, name);
+
+                db.insert(tables[COUNTRIES], null, values);
+            }
+        } catch (IOException e) {
+            Log.e("CalliopeSQL - loadAllCountries", e.getMessage());
+        } finally {
+            if(is != null){
+                try {
+                    is.close();
+                } catch (IOException e) {
+
+                }
+            }
+
+            if(sc != null)
+                sc.close();
         }
-
-        db.close();
-        matchingResults.close();
-        return null;
     }
-
-    /*public Verb getFirstVerb(){
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor results = db.query(tables[VERBS], null, null, null, null, null, null);
-        Verb verb = null;
-
-        if(results.getCount() > 0){
-            results.moveToFirst();
-            verb = CalliopeVerb.buildFromCursor(results);
-        }
-
-        results.close();
-        db.close();
-        return verb;
-    }*/
 
     public Verb<?> getVerb(String name){
         SQLiteDatabase db = this.getReadableDatabase();
@@ -394,7 +414,8 @@ public class CalliopeSQLiteOpenHelper extends SQLiteOpenHelper implements WordDa
         WordBuffer words = new WordBuffer();
         String[] parts = speech.split(" ");
 
-        for(String elem: parts){
+        for(int i=0; i<parts.length; i++){
+            String elem = parts[i];
             Word tmp = findWord(elem);
 
             if(tmp == null){
