@@ -1,19 +1,90 @@
 package com.rokuan.calliope;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
+import android.os.AsyncTask;
+import android.os.Handler;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
+
+import com.rokuan.calliope.db.CalliopeSQLiteOpenHelper;
+import com.rokuan.calliope.db.DatabaseLoadingListener;
 
 
-public class LoadingActivity extends ActionBarActivity {
+public class LoadingActivity extends FragmentActivity implements DatabaseLoadingListener {
+    private CalliopeSQLiteOpenHelper db;
+    private SQLiteDatabase database;
+    /*private TextView maxProgressView;
+    private TextView currentProgressView;
+    private TextView progressMessageView;*/
+
+    //private Handler handler = new Handler();
+
+    class DatabaseLoadingAsyncTask extends AsyncTask<Void, Void, Void> {
+        @Override
+        public void onPreExecute(){
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+
+            }
+            onLoadingStarted();
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            loadDatabase();
+            return null;
+        }
+
+        @Override
+        public void onPostExecute(Void result){
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+
+            }
+            onLoadingEnded();
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_loading);
+
+        db = new CalliopeSQLiteOpenHelper(this);
+        //db.setDatabaseLoadingListener(this);
+
+        /*maxProgressView = (TextView)findViewById(R.id.loading_max_progress);
+        currentProgressView = (TextView)findViewById(R.id.loading_progress);
+        progressMessageView = (TextView)findViewById(R.id.progress_message);*/
+
+        new DatabaseLoadingAsyncTask().execute();
     }
 
+    /*@Override
+    public void onStart(){
+        super.onStart();
+        //database = db.getReadableDatabase();
+    }*/
+
+
+    private void loadDatabase(){
+        database = db.getReadableDatabase();
+    }
+
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        database.close();
+        database = null;
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -35,5 +106,32 @@ public class LoadingActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void setOperationsCount(int count) {
+        //maxProgressView.setText(String.valueOf(count));
+    }
+
+    //@Override
+    public void onLoadingStarted() {
+
+    }
+
+    @Override
+    public void onOperationStarted(int operationIndex, String message) {
+            /*currentProgressView.setText(String.valueOf(operationIndex+1));
+            progressMessageView.setText(message);*/
+    }
+
+    @Override
+    public void onOperationEnded(int operationIndex) {
+
+    }
+
+    //@Override
+    public void onLoadingEnded() {
+        Intent intent = new Intent(this, HomeActivity.class);
+        this.startActivity(intent);
     }
 }

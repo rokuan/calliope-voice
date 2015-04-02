@@ -15,17 +15,22 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.rokuan.calliope.constants.RequestCode;
 import com.rokuan.calliope.db.CalliopeSQLiteOpenHelper;
 import com.rokuan.calliope.modules.CalliopeModule;
 import com.rokuan.calliope.modules.GoogleMaps;
 import com.rokuan.calliope.modules.MediaCapture;
+import com.rokuan.calliope.source.ImageFileSource;
+import com.rokuan.calliope.source.SourceObject;
+import com.rokuan.calliope.source.VideoFileSource;
 import com.rokuan.calliope.view.PictureFileView;
 import com.rokuan.calliope.view.VideoFileView;
 import com.rokuan.calliopecore.sentence.structure.InterpretationObject;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -41,6 +46,7 @@ public class HomeActivity extends FragmentActivity implements View.OnTouchListen
     private ViewAdapter viewAdapter;
 
     private List<CalliopeModule> modules = new ArrayList<CalliopeModule>();
+    private LinkedList<SourceObject> sources = new LinkedList<>();
 
     @Override
     public void onCreate(Bundle savedInstanceState){
@@ -94,6 +100,11 @@ public class HomeActivity extends FragmentActivity implements View.OnTouchListen
 
         speech = SpeechRecognizer.createSpeechRecognizer(this);
         speech.setRecognitionListener(this);
+    }
+
+    @Override
+    public void onBackPressed(){
+        this.moveTaskToBack(true);
     }
 
     @Override
@@ -210,7 +221,12 @@ public class HomeActivity extends FragmentActivity implements View.OnTouchListen
                 imageView.setImageBitmap(imageBitmap);
                 viewAdapter.add(imageView);*/
                 Uri pictureUri = data.getData();
+                ImageFileSource image = new ImageFileSource(pictureUri);
                 PictureFileView v = new PictureFileView(this, pictureUri);
+
+                Toast.makeText(this, image.getText(), Toast.LENGTH_LONG).show();
+
+                sources.add(image);
                 viewAdapter.add(v);
             }
 
@@ -220,7 +236,10 @@ public class HomeActivity extends FragmentActivity implements View.OnTouchListen
             /*Bundle extras = data.getExtras();
             Bitmap imageBitmap = (Bitmap) extras.get("data");*/
             Uri videoUri = data.getData();
+            VideoFileSource video = new VideoFileSource(videoUri);
             VideoFileView v = new VideoFileView(this, videoUri);
+
+            sources.add(video);
             viewAdapter.add(v);
             Log.i("REQUEST_VIDEO_CAPTURE", "OK");
         }

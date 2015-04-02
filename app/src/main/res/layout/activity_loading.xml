@@ -1,9 +1,63 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.rokuan.calliope.LoadingActivity">
+    tools:context="com.rokuan.calliope.LoadingActivity"
+    android:background="@color/main_color"
+    android:gravity="center"
+    android:orientation="vertical"
+    >
 
-    <TextView android:text="@string/hello_world" android:layout_width="wrap_content"
+    <FrameLayout
+        android:layout_margin="30dp"
+        android:layout_width="150dp"
+        android:layout_height="150dp">
+        <ProgressBar
+            android:indeterminate="true"
+            android:layout_width="150dp"
+            android:layout_height="150dp" />
+        <ImageView
+            android:layout_gravity="center"
+            android:src="@drawable/ic_launcher"
+            android:layout_width="50dp"
+            android:layout_height="50dp" />
+    </FrameLayout>
+
+    <TextView
+        android:text="Calliope"
+        android:textSize="30dp"
+        android:textColor="#FFFFFF"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
+    <!-- <TextView
+        android:id="@+id/progress_message"
+        android:gravity="center"
+        android:textColor="#C3C3C3"
+        android:text="Loading database"
+        android:layout_margin="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/loading_progress"
+            android:textColor="#FFFFFF"
+            android:text="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:text="/"
+            android:textColor="#FFFFFF"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/loading_max_progress"
+            android:textColor="#FFFFFF"
+            android:text="4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout> -->
 </LinearLayout>
