@@ -6,4 +6,5 @@ package com.rokuan.calliope.constants;
 public class RequestCode {
     public static final int REQUEST_IMAGE_CAPTURE = 1;
     public static final int REQUEST_VIDEO_CAPTURE = 2;
+    public static final int REQUEST_IMAGE_PICK = 3;
 }

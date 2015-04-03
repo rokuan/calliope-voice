@@ -36,7 +36,7 @@ import java.util.List;
 /**
  * Created by LEBEAU Christophe on 24/03/2015.
  */
-public class HomeActivity extends FragmentActivity implements View.OnTouchListener, RecognitionListener {
+public class HomeActivity extends FragmentActivity implements View.OnTouchListener, RecognitionListener, View.OnClickListener {
     private SpeechRecognizer speech;
     private CalliopeSQLiteOpenHelper db;
     private TextView messageBox;
@@ -63,6 +63,7 @@ public class HomeActivity extends FragmentActivity implements View.OnTouchListen
         //recognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_PREFERENCE, "fr");
 
         findViewById(R.id.speech_activate).setOnTouchListener(this);
+        findViewById(R.id.import_image).setOnClickListener(this);
 
         messageBox = (TextView)findViewById(R.id.calliope_message);
         contentListView = (ListView)findViewById(R.id.messages_list);
@@ -210,9 +211,12 @@ public class HomeActivity extends FragmentActivity implements View.OnTouchListen
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(data == null){
+            return;
+        }
+
         if (requestCode == RequestCode.REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             //Bitmap pictureThumbnail = data.getParcelableExtra("data");
-            if(data != null) {
                 /*Bundle extras = data.getExtras();
                 Bitmap imageBitmap = (Bitmap) extras.get("data");
                 // Do other work with full size photo saved in mLocationForPhotos
@@ -220,16 +224,8 @@ public class HomeActivity extends FragmentActivity implements View.OnTouchListen
                 ImageView imageView = new ImageView(this);
                 imageView.setImageBitmap(imageBitmap);
                 viewAdapter.add(imageView);*/
-                Uri pictureUri = data.getData();
-                ImageFileSource image = new ImageFileSource(pictureUri);
-                PictureFileView v = new PictureFileView(this, pictureUri);
-
-                Toast.makeText(this, image.getText(), Toast.LENGTH_LONG).show();
-
-                sources.add(image);
-                viewAdapter.add(v);
-            }
-
+            Uri pictureUri = data.getData();
+            addImage(pictureUri);
             Log.i("REQUEST_IMAGE_CAPTURE", "OK");
         } else if(requestCode == RequestCode.REQUEST_VIDEO_CAPTURE && resultCode == RESULT_OK){
             //Bitmap videoThumbnail = data.getParcelableExtra("data");
@@ -242,6 +238,29 @@ public class HomeActivity extends FragmentActivity implements View.OnTouchListen
             sources.add(video);
             viewAdapter.add(v);
             Log.i("REQUEST_VIDEO_CAPTURE", "OK");
+        } else if(requestCode == RequestCode.REQUEST_IMAGE_PICK && resultCode == RESULT_OK){
+            Uri pictureUri = data.getData();
+            addImage(pictureUri);
+        }
+    }
+
+    private void addImage(Uri pictureUri){
+        ImageFileSource image = new ImageFileSource(this, pictureUri);
+        PictureFileView v = new PictureFileView(this, pictureUri);
+
+        Toast.makeText(this, image.getText(), Toast.LENGTH_LONG).show();
+
+        sources.add(image);
+        viewAdapter.add(v);
+    }
+
+    @Override
+    public void onClick(View v) {
+        if(v.getId() == R.id.import_image){
+            Intent intent = new Intent();
+            intent.setType("image/*");
+            intent.setAction(Intent.ACTION_GET_CONTENT);
+            startActivityForResult(Intent.createChooser(intent, "Sélectionner image"), RequestCode.REQUEST_IMAGE_PICK);
         }
     }
 

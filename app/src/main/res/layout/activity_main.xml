@@ -18,24 +18,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             >
-            <ImageView
+            <ImageButton
+                android:id="@+id/import_image"
                 android:background="#FFFFFF"
                 android:padding="5dp"
-                android:src="@android:drawable/presence_audio_online"
-                android:layout_margin="5dp"
-                android:layout_width="50dp"
-                android:layout_height="40dp" />
-            <ImageView
-                android:background="#FFFFFF"
-                android:padding="5dp"
-                android:src="@android:drawable/presence_video_online"
+                android:src="@android:drawable/ic_menu_gallery"
                 android:layout_margin="5dp"
                 android:layout_width="50dp"
                 android:layout_height="40dp" />
         </LinearLayout>
         <LinearLayout
             android:id="@+id/module_tab"
-            android:visibility="invisible"
             android:orientation="horizontal"
             android:background="#FFFFFF"
             android:layout_weight="1"
@@ -43,8 +36,8 @@
             android:layout_height="match_parent">
 
             <TextView
-                android:id="@+id/module_title"
-                android:gravity="center"
+                android:id="@+id/calliope_message"
+                android:gravity="left|center_vertical"
                 android:textColor="#000000"
                 android:paddingTop="2dp"
                 android:paddingBottom="2dp"
@@ -56,13 +49,6 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1" />
-            <ImageButton
-                android:background="#FFFFFF"
-                android:padding="10dp"
-                android:id="@+id/close_module"
-                android:src="@android:drawable/ic_menu_close_clear_cancel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
         </LinearLayout>
     </LinearLayout>
 
@@ -75,42 +61,25 @@
     </ListView>
 
     <LinearLayout
+        android:background="@color/main_color"
         android:orientation="horizontal"
-        android:gravity="bottom"
+        android:gravity="center"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:id="@+id/calliope_message"
-            android:background="@color/main_color"
-            android:text="Bienvenue dans Calliope"
-            android:textColor="#FFFFFF"
-            android:padding="5dp"
-            android:gravity="center_vertical|left"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:minHeight="30dp"
-            android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:padding="3dp">
 
         <LinearLayout
             android:gravity="center"
-            android:background="@color/main_color"
+            android:background="#FFFFFF"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="3dp">
-            <LinearLayout
-                android:gravity="center"
-                android:background="#FFFFFF"
+            android:layout_height="wrap_content">
+            <ImageButton
+                android:padding="5dp"
+                android:background="@null"
+                android:id="@+id/speech_activate"
+                android:src="@android:drawable/ic_btn_speak_now"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-                <ImageButton
-                    android:padding="5dp"
-                    android:background="@null"
-                    android:id="@+id/speech_activate"
-                    android:src="@android:drawable/ic_btn_speak_now"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-            </LinearLayout>
-
+                android:layout_height="wrap_content" />
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>

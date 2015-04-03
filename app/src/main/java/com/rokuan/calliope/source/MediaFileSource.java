@@ -1,5 +1,6 @@
 package com.rokuan.calliope.source;
 
+import android.content.Context;
 import android.net.Uri;
 
 /**
@@ -10,6 +11,11 @@ public abstract class MediaFileSource extends SourceObject {
 
     protected MediaFileSource(ObjectType ty, Uri uri) {
         super(ty);
+        fileUri = uri;
+    }
+
+    protected MediaFileSource(ObjectType ty, Context context, Uri uri) {
+        super(ty, context);
         fileUri = uri;
     }
 
