@@ -5,4 +5,5 @@ package com.rokuan.calliope.extract;
  */
 public interface TextExtractor {
     public String getText();
+    public void getTextAsync(TextExtractionListener listener);
 }

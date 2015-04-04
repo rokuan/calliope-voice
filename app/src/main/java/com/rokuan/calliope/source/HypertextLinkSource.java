@@ -1,6 +1,9 @@
 package com.rokuan.calliope.source;
 
+import com.rokuan.calliope.extract.ExtractionListener;
+import com.rokuan.calliope.extract.HypertextLinkExtractionListener;
 import com.rokuan.calliope.extract.HypertextLinkExtractor;
+import com.rokuan.calliope.extract.TextExtractionListener;
 import com.rokuan.calliope.extract.TextExtractor;
 
 import java.net.URL;
@@ -22,7 +25,23 @@ public class HypertextLinkSource extends SourceObject implements HypertextLinkEx
     }
 
     @Override
+    public void getURLAsync(HypertextLinkExtractionListener listener) {
+        if(listener != null){
+            listener.onExtractionStarted("");
+            listener.onExtractionEnded(this.getURL());
+        }
+    }
+
+    @Override
     public String getText() {
         return linkURL.toString();
+    }
+
+    @Override
+    public void getTextAsync(TextExtractionListener listener) {
+        if(listener != null){
+            listener.onExtractionStarted("");
+            listener.onExtractionEnded(this.getText());
+        }
     }
 }

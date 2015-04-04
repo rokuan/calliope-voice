@@ -19,6 +19,8 @@ import android.widget.Toast;
 
 import com.rokuan.calliope.constants.RequestCode;
 import com.rokuan.calliope.db.CalliopeSQLiteOpenHelper;
+import com.rokuan.calliope.extract.ExtractionListener;
+import com.rokuan.calliope.extract.TextExtractionListener;
 import com.rokuan.calliope.modules.CalliopeModule;
 import com.rokuan.calliope.modules.GoogleMaps;
 import com.rokuan.calliope.modules.MediaCapture;
@@ -36,7 +38,7 @@ import java.util.List;
 /**
  * Created by LEBEAU Christophe on 24/03/2015.
  */
-public class HomeActivity extends FragmentActivity implements View.OnTouchListener, RecognitionListener, View.OnClickListener {
+public class HomeActivity extends FragmentActivity implements View.OnTouchListener, RecognitionListener, View.OnClickListener, TextExtractionListener {
     private SpeechRecognizer speech;
     private CalliopeSQLiteOpenHelper db;
     private TextView messageBox;
@@ -248,7 +250,7 @@ public class HomeActivity extends FragmentActivity implements View.OnTouchListen
         ImageFileSource image = new ImageFileSource(this, pictureUri);
         PictureFileView v = new PictureFileView(this, pictureUri);
 
-        Toast.makeText(this, image.getText(), Toast.LENGTH_LONG).show();
+        image.getTextAsync(this);
 
         sources.add(image);
         viewAdapter.add(v);
@@ -262,6 +264,17 @@ public class HomeActivity extends FragmentActivity implements View.OnTouchListen
             intent.setAction(Intent.ACTION_GET_CONTENT);
             startActivityForResult(Intent.createChooser(intent, "Sélectionner image"), RequestCode.REQUEST_IMAGE_PICK);
         }
+    }
+
+    @Override
+    public void onExtractionStarted(String message) {
+        Log.i("TextExtraction", "Extraction started");
+    }
+
+    @Override
+    public void onExtractionEnded(String value) {
+        Log.i("TextExtraction", "Extraction ended with walue '" + value + "'");
+        Toast.makeText(this, value, Toast.LENGTH_LONG).show();
     }
 
     class ViewAdapter extends ArrayAdapter<View> {

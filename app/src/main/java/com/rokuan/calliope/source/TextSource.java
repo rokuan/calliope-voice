@@ -1,5 +1,6 @@
 package com.rokuan.calliope.source;
 
+import com.rokuan.calliope.extract.TextExtractionListener;
 import com.rokuan.calliope.extract.TextExtractor;
 
 /**
@@ -13,8 +14,17 @@ public class TextSource extends SourceObject implements TextExtractor {
         text = t;
     }
 
+
     @Override
     public String getText() {
         return text;
+    }
+
+    @Override
+    public void getTextAsync(TextExtractionListener listener) {
+        if(listener != null){
+            listener.onExtractionStarted("");
+            listener.onExtractionEnded(text);
+        }
     }
 }

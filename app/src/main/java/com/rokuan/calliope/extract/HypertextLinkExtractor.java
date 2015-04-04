@@ -7,4 +7,5 @@ import java.net.URL;
  */
 public interface HypertextLinkExtractor {
     public URL getURL();
+    public void getURLAsync(HypertextLinkExtractionListener listener);
 }

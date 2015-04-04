@@ -3,6 +3,7 @@ package com.rokuan.calliope.extract;
 /**
  * Created by LEBEAU Christophe on 04/04/2015.
  */
-public class ExtractionListener {
-
+public interface ExtractionListener<ReturnType> {
+    void onExtractionStarted(String message);
+    void onExtractionEnded(ReturnType value);
 }
