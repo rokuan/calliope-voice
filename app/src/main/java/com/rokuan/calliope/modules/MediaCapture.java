@@ -25,7 +25,7 @@ import java.util.List;
  * Created by LEBEAU Christophe on 24/03/2015.
  */
 public class MediaCapture extends IntentModule {
-    private static final String PICTURES_PATH = "calliope/pictures/";
+    //private static final String PICTURES_PATH = "calliope/pictures/";
     private static final String MEDIA_REGEX = "(camescope|caméra|((photo|vidéo)(s?)))";
 
     public MediaCapture(Context c) {
@@ -84,19 +84,7 @@ public class MediaCapture extends IntentModule {
     }
 
     private void capturePhoto(){
-        /*String name = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        File directory = new File(Environment
-                .getExternalStorageDirectory(), PICTURES_PATH);
-
-        if(!directory.exists()){
-            directory.mkdirs();
-        }
-
-        File destination = new File(directory, name + ".jpg");*/
-
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        /*intent.putExtra(MediaStore.EXTRA_OUTPUT,
-                Uri.fromFile(destination));*/
 
         if (intent.resolveActivity(this.getContext().getPackageManager()) != null) {
             ((HomeActivity)this.getContext()).startActivityForResult(intent, RequestCode.REQUEST_IMAGE_CAPTURE);

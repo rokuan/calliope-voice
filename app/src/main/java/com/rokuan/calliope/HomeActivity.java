@@ -21,6 +21,7 @@ import com.rokuan.calliope.constants.RequestCode;
 import com.rokuan.calliope.db.CalliopeSQLiteOpenHelper;
 import com.rokuan.calliope.extract.ExtractionListener;
 import com.rokuan.calliope.extract.TextExtractionListener;
+import com.rokuan.calliope.modules.AlarmHandler;
 import com.rokuan.calliope.modules.CalliopeModule;
 import com.rokuan.calliope.modules.GoogleMaps;
 import com.rokuan.calliope.modules.MediaCapture;
@@ -79,6 +80,7 @@ public class HomeActivity extends FragmentActivity implements View.OnTouchListen
     public void addModules(){
         modules.add(new GoogleMaps(this));
         modules.add(new MediaCapture(this));
+        modules.add(new AlarmHandler(this));
     }
 
     @Override
