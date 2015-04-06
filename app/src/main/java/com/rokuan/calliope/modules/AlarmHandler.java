@@ -43,22 +43,33 @@ public class AlarmHandler extends IntentModule {
             case ALERT:
             case WAKE_UP:
             case NOTIFY:
-                if(object.what.when != null){
-                    switch(object.what.when.getType()){
-                        case SINGLE:
-                            SingleTimeObject time = (SingleTimeObject)object.what.when;
-                            setNewAlarm("Calliope", time.date);
-                            break;
-                    }
+                Date time = getTimeIfExists(object);
+
+                if(time == null){
+                    // TODO: que faire si l'heure n'est pas precisee ou si ce n'est pas une date simple
+                    return true;
                 }
 
-                // TODO: que faire si l'heure n'est pas precisee ou si ce n'est pas une date simple
+                setNewAlarm("Calliope", time);
                 return true;
         }
 
         if(object.what != null && object.what.object != null){
             if(object.what.object.matches(CONTENT_ALARM_REGEX)){
+                switch((Action.VerbAction)object.action){
+                    case CREATE_AGAIN:
+                    case MAKE:
+                    case SAVE__RECORD:
+                    case ADD:
+                        Date time = getTimeIfExists(object);
 
+                        if(time == null){
+                            return true;
+                        }
+
+                        setNewAlarm("Calliope", time);
+                        return true;
+                }
             } else if(object.what.object.matches(CONTENT_TIMER_REGEX)){
 
             }
@@ -67,10 +78,22 @@ public class AlarmHandler extends IntentModule {
         return false;
     }
 
+    private Date getTimeIfExists(InterpretationObject object){
+        if(object.what.when != null){
+            switch(object.what.when.getType()){
+                case SINGLE:
+                    SingleTimeObject time = (SingleTimeObject)object.what.when;
+                    return time.date;
+            }
+        }
+
+        return null;
+    }
+
     public void setNewAlarm(String alarmTitle, Date time){
         Calendar calendar = Calendar.getInstance();
-        int hour = 0;
-        int minutes = 0;
+        int hour;
+        int minutes;
 
         calendar.setTime(time);
         hour = calendar.get(Calendar.HOUR);

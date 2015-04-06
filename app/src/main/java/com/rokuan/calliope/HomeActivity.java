@@ -8,11 +8,15 @@ import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.support.v4.app.FragmentActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -42,7 +46,9 @@ import java.util.List;
 public class HomeActivity extends FragmentActivity implements View.OnTouchListener, RecognitionListener, View.OnClickListener, TextExtractionListener {
     private SpeechRecognizer speech;
     private CalliopeSQLiteOpenHelper db;
-    private TextView messageBox;
+    //private TextView messageBox;
+    private EditText messageBox;
+    private ImageButton submitText;
     private Intent recognizerIntent;
 
     private ListView contentListView;
@@ -65,14 +71,34 @@ public class HomeActivity extends FragmentActivity implements View.OnTouchListen
         recognizerIntent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1);
         //recognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_PREFERENCE, "fr");
 
-        findViewById(R.id.speech_activate).setOnTouchListener(this);
-        findViewById(R.id.import_image).setOnClickListener(this);
 
-        messageBox = (TextView)findViewById(R.id.calliope_message);
+        //messageBox = (TextView)findViewById(R.id.calliope_message);
+        messageBox = (EditText)findViewById(R.id.compose_message);
+        submitText = (ImageButton)findViewById(R.id.submit_message);
         contentListView = (ListView)findViewById(R.id.messages_list);
         viewAdapter = new ViewAdapter(this, new ArrayList<View>());
         viewAdapter.setNotifyOnChange(true);
         contentListView.setAdapter(viewAdapter);
+
+        findViewById(R.id.speech_activate).setOnTouchListener(this);
+        findViewById(R.id.import_image).setOnClickListener(this);
+        submitText.setOnClickListener(this);
+        messageBox.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                submitText.setEnabled(!messageBox.getText().toString().isEmpty());
+            }
+        });
 
         addModules();
     }
@@ -187,6 +213,7 @@ public class HomeActivity extends FragmentActivity implements View.OnTouchListen
         }
 
         String rightPart = text.length() > 1 ? text.substring(1) : "";
+        //messageBox.setText(Character.toUpperCase(text.charAt(0)) + rightPart);
         messageBox.setText(Character.toUpperCase(text.charAt(0)) + rightPart);
 
         try {
@@ -260,11 +287,17 @@ public class HomeActivity extends FragmentActivity implements View.OnTouchListen
 
     @Override
     public void onClick(View v) {
-        if(v.getId() == R.id.import_image){
-            Intent intent = new Intent();
-            intent.setType("image/*");
-            intent.setAction(Intent.ACTION_GET_CONTENT);
-            startActivityForResult(Intent.createChooser(intent, "Sélectionner image"), RequestCode.REQUEST_IMAGE_PICK);
+        switch(v.getId()){
+            case R.id.import_image:
+                Intent intent = new Intent();
+                intent.setType("image/*");
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                startActivityForResult(Intent.createChooser(intent, "Sélectionner image"), RequestCode.REQUEST_IMAGE_PICK);
+                break;
+
+            case R.id.compose_message:
+                startInterpretationProcess(messageBox.getText().toString());
+                break;
         }
     }
 
