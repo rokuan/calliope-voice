@@ -17,6 +17,7 @@ import com.rokuan.calliopecore.sentence.Verb;
 import com.rokuan.calliopecore.sentence.VerbConjugation;
 import com.rokuan.calliopecore.sentence.Word;
 import com.rokuan.calliopecore.sentence.structure.InterpretationObject;
+import com.rokuan.calliopecore.sentence.structure.data.DateConverter;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -377,6 +378,10 @@ public class CalliopeSQLiteOpenHelper extends SQLiteOpenHelper implements WordDa
         Word result = null;
 
         Cursor selection;
+
+        if(w.matches(DateConverter.fullTimeRegex) || w.matches(DateConverter.hourOnlyRegex)){
+            return new Word(w, Word.WordType.TIME);
+        }
 
         /*if(Character.isDigit(w.charAt(0))){
             return new Word(Word.WordType.NUMBER, w);

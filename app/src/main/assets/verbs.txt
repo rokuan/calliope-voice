@@ -733,6 +733,7 @@ prendre;TAKE;3
 préparer;PREPARE;1
 presser;PUSH__PRESS;1
 prêter;UNDEFINED;1
+prévenir;ALERT;3
 prier;PRAY;1
 produire;MAKE;3
 progresser;PROGRESS;1

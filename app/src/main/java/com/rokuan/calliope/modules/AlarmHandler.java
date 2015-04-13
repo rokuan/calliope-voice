@@ -3,8 +3,10 @@ package com.rokuan.calliope.modules;
 import android.content.Context;
 import android.content.Intent;
 import android.provider.AlarmClock;
+import android.util.Log;
 
 import com.rokuan.calliope.HomeActivity;
+import com.rokuan.calliope.view.AlarmView;
 import com.rokuan.calliopecore.sentence.Action;
 import com.rokuan.calliopecore.sentence.structure.InterpretationObject;
 import com.rokuan.calliopecore.sentence.structure.data.time.SingleTimeObject;
@@ -17,7 +19,7 @@ import java.util.Date;
  */
 public class AlarmHandler extends IntentModule {
     private static final String CONTENT_ALARM_REGEX = "(alarme)";
-    private static final String CONTENT_TIMER_REGEX = "(minuteur|chronomètre|compteur)";
+    private static final String CONTENT_TIMER_REGEX = "(minuteur|chronomètre|compteur|timer)";
     private static final String CONTENT_REGEX = CONTENT_ALARM_REGEX + "|" + CONTENT_TIMER_REGEX;
 
     public AlarmHandler(Context c) {
@@ -26,8 +28,11 @@ public class AlarmHandler extends IntentModule {
 
     @Override
     public boolean canHandle(InterpretationObject object) {
-        if(object.action == Action.VerbAction.ALERT){
-            return true;
+        switch((Action.VerbAction)object.action){
+            case ALERT:
+            case NOTIFY:
+            case WAKE_UP:
+                return true;
         }
 
         if(object.what != null && object.what.object != null && object.what.object.matches(CONTENT_REGEX)){
@@ -47,7 +52,7 @@ public class AlarmHandler extends IntentModule {
 
                 if(time == null){
                     // TODO: que faire si l'heure n'est pas precisee ou si ce n'est pas une date simple
-                    return true;
+                    return false;
                 }
 
                 setNewAlarm("Calliope", time);
@@ -64,14 +69,26 @@ public class AlarmHandler extends IntentModule {
                         Date time = getTimeIfExists(object);
 
                         if(time == null){
-                            return true;
+                            return false;
                         }
 
-                        setNewAlarm("Calliope", time);
+                        setNewAlarm("Calliope - Alarm", time);
                         return true;
                 }
             } else if(object.what.object.matches(CONTENT_TIMER_REGEX)){
+                switch((Action.VerbAction)object.action){
+                    case START:
+                    case ACTIVATE:
+                    case OPEN:
+                        Date time = getTimeIfExists(object);
 
+                        if(time == null){
+                            return false;
+                        }
+
+                        startTimer("Calliope - Timer", getSecondsFromTime(time));
+                        return true;
+                }
             }
         }
 
@@ -79,15 +96,37 @@ public class AlarmHandler extends IntentModule {
     }
 
     private Date getTimeIfExists(InterpretationObject object){
+        /*if(object.what == null){
+
+        }
         if(object.what.when != null){
             switch(object.what.when.getType()){
                 case SINGLE:
                     SingleTimeObject time = (SingleTimeObject)object.what.when;
                     return time.date;
             }
+        }*/
+        if(object.when != null){
+            switch(object.when.getType()){
+                case SINGLE:
+                    SingleTimeObject time = (SingleTimeObject)object.when;
+                    return time.date;
+            }
         }
 
         return null;
+    }
+
+    private int getSecondsFromTime(Date time){
+        Calendar calendar = Calendar.getInstance();
+        int seconds = 0;
+
+        calendar.setTime(time);
+        seconds += calendar.get(Calendar.SECOND);
+        seconds += calendar.get(Calendar.MINUTE) * 60;
+        seconds += calendar.get(Calendar.HOUR_OF_DAY) * 3600;
+
+        return seconds;
     }
 
     public void setNewAlarm(String alarmTitle, Date time){
@@ -96,13 +135,28 @@ public class AlarmHandler extends IntentModule {
         int minutes;
 
         calendar.setTime(time);
-        hour = calendar.get(Calendar.HOUR);
+        hour = calendar.get(Calendar.HOUR_OF_DAY);
         minutes = calendar.get(Calendar.MINUTE);
 
         Intent intent = new Intent(AlarmClock.ACTION_SET_ALARM)
                 .putExtra(AlarmClock.EXTRA_MESSAGE, alarmTitle)
                 .putExtra(AlarmClock.EXTRA_HOUR, hour)
-                .putExtra(AlarmClock.EXTRA_MINUTES, minutes);
+                .putExtra(AlarmClock.EXTRA_MINUTES, minutes)
+                .putExtra(AlarmClock.EXTRA_SKIP_UI, true);
+
+        if (intent.resolveActivity(this.getContext().getPackageManager()) != null) {
+            this.getContext().startActivity(intent);
+
+            AlarmView aView = new AlarmView(this.getContext(), time);
+            ((HomeActivity)this.getContext()).insertView(aView);
+        }
+    }
+
+    public void startTimer(String message, int seconds) {
+        Intent intent = new Intent(AlarmClock.ACTION_SET_TIMER)
+                .putExtra(AlarmClock.EXTRA_MESSAGE, message)
+                .putExtra(AlarmClock.EXTRA_LENGTH, seconds)
+                .putExtra(AlarmClock.EXTRA_SKIP_UI, true);
 
         if (intent.resolveActivity(this.getContext().getPackageManager()) != null) {
             this.getContext().startActivity(intent);

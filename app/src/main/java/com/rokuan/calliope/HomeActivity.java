@@ -11,6 +11,7 @@ import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +32,7 @@ import com.rokuan.calliope.modules.GoogleMaps;
 import com.rokuan.calliope.modules.MediaCapture;
 import com.rokuan.calliope.source.ImageFileSource;
 import com.rokuan.calliope.source.SourceObject;
+import com.rokuan.calliope.source.TextSource;
 import com.rokuan.calliope.source.VideoFileSource;
 import com.rokuan.calliope.view.PictureFileView;
 import com.rokuan.calliope.view.VideoFileView;
@@ -43,7 +45,7 @@ import java.util.List;
 /**
  * Created by LEBEAU Christophe on 24/03/2015.
  */
-public class HomeActivity extends FragmentActivity implements View.OnTouchListener, RecognitionListener, View.OnClickListener, TextExtractionListener {
+public class HomeActivity extends FragmentActivity implements View.OnTouchListener, RecognitionListener, View.OnClickListener {
     private SpeechRecognizer speech;
     private CalliopeSQLiteOpenHelper db;
     //private TextView messageBox;
@@ -83,6 +85,7 @@ public class HomeActivity extends FragmentActivity implements View.OnTouchListen
         findViewById(R.id.speech_activate).setOnTouchListener(this);
         findViewById(R.id.import_image).setOnClickListener(this);
         submitText.setOnClickListener(this);
+        submitText.setEnabled(false);
         messageBox.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -191,7 +194,9 @@ public class HomeActivity extends FragmentActivity implements View.OnTouchListen
         ArrayList<String> data = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
 
         try{
-            startInterpretationProcess(data.get(0));
+            //startInterpretationProcess(data.get(0));
+            //messageBox.setText(data.get(0));
+            updateMessageText(data.get(0));
         }catch(Exception e){
 
         }
@@ -207,14 +212,17 @@ public class HomeActivity extends FragmentActivity implements View.OnTouchListen
 
     }
 
+    private void updateMessageText(String text){
+        /*String rightPart = text.length() > 1 ? text.substring(1) : "";
+        //messageBox.setText(Character.toUpperCase(text.charAt(0)) + rightPart);
+        messageBox.setText(Character.toUpperCase(text.charAt(0)) + rightPart);*/
+        messageBox.setText(text);
+    }
+
     public void startInterpretationProcess(String text){
         if(text.isEmpty()){
             return;
         }
-
-        String rightPart = text.length() > 1 ? text.substring(1) : "";
-        //messageBox.setText(Character.toUpperCase(text.charAt(0)) + rightPart);
-        messageBox.setText(Character.toUpperCase(text.charAt(0)) + rightPart);
 
         try {
             InterpretationObject obj = db.parseSpeech(text);
@@ -227,8 +235,9 @@ public class HomeActivity extends FragmentActivity implements View.OnTouchListen
             interpret(obj);
         } catch(Exception e){
             // TODO: afficher un message d'erreur
-            //e.printStackTrace();
-            Log.e("Calliope - startInterpretationProcess", e.toString());
+            e.printStackTrace();
+            //Log.e("Calliope - startInterpretationProcess", e.toString());
+            //Log.e("Calliope - startInterpretationProcess", e.toString());
         }
     }
 
@@ -279,10 +288,20 @@ public class HomeActivity extends FragmentActivity implements View.OnTouchListen
         ImageFileSource image = new ImageFileSource(this, pictureUri);
         PictureFileView v = new PictureFileView(this, pictureUri);
 
-        image.getTextAsync(this);
+        //image.getTextAsync(this);
 
         sources.add(image);
         viewAdapter.add(v);
+    }
+
+    private void addMessage(String text){
+        TextSource textSrc = new TextSource(text);
+        TextView textView = new TextView(this);
+
+        textView.setText(text);
+
+        sources.add(textSrc);
+        viewAdapter.add(textView);
     }
 
     @Override
@@ -292,16 +311,19 @@ public class HomeActivity extends FragmentActivity implements View.OnTouchListen
                 Intent intent = new Intent();
                 intent.setType("image/*");
                 intent.setAction(Intent.ACTION_GET_CONTENT);
-                startActivityForResult(Intent.createChooser(intent, "Sélectionner image"), RequestCode.REQUEST_IMAGE_PICK);
+                startActivityForResult(Intent.createChooser(intent, "Importer image"), RequestCode.REQUEST_IMAGE_PICK);
                 break;
 
-            case R.id.compose_message:
-                startInterpretationProcess(messageBox.getText().toString());
+            case R.id.submit_message:
+                String text = messageBox.getText().toString();
+                messageBox.setText("");
+                addMessage(text);
+                startInterpretationProcess(text);
                 break;
         }
     }
 
-    @Override
+    /*@Override
     public void onExtractionStarted(String message) {
         Log.i("TextExtraction", "Extraction started");
     }
@@ -310,16 +332,31 @@ public class HomeActivity extends FragmentActivity implements View.OnTouchListen
     public void onExtractionEnded(String value) {
         Log.i("TextExtraction", "Extraction ended with walue '" + value + "'");
         Toast.makeText(this, value, Toast.LENGTH_LONG).show();
+    }*/
+
+    public void insertView(View w){
+        viewAdapter.add(w);
     }
 
     class ViewAdapter extends ArrayAdapter<View> {
+        private LayoutInflater inflater;
+
         public ViewAdapter(Context context, List<View> objects) {
             super(context, R.layout.fragment_main, objects);
+            inflater = (LayoutInflater)context.getSystemService(LAYOUT_INFLATER_SERVICE);
         }
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent){
             return this.getItem(position);
+        }
+
+        @Override
+        public void add(View v){
+            View mainView = inflater.inflate(R.layout.message_item, null);
+            ViewGroup layout = (ViewGroup)mainView.findViewById(R.id.message_item_placeholder);
+            layout.addView(v);
+            super.add(mainView);
         }
     }
 }
