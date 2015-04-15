@@ -18,6 +18,7 @@ public class VideoFileView extends LinearLayout implements View.OnClickListener 
     private Uri videoUri;
     private VideoView player;
     private ImageButton playButton;
+    private ImageButton pauseButton;
 
     public VideoFileView(Context context, Uri u) {
         super(context);
@@ -31,23 +32,39 @@ public class VideoFileView extends LinearLayout implements View.OnClickListener 
         inflater.inflate(R.layout.view_video, this);
 
         player = (VideoView)findViewById(R.id.view_video_content);
+        player.setOnClickListener(this);
         player.setVideoURI(videoUri);
 
         playButton = (ImageButton)findViewById(R.id.view_video_play);
+        pauseButton = (ImageButton)findViewById(R.id.view_video_pause);
         playButton.setOnClickListener(this);
+        pauseButton.setOnClickListener(this);
     }
 
     @Override
     public void onClick(View v) {
-        if(v.getId() == R.id.view_video_play){
-            playButton.setVisibility(INVISIBLE);
-            player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    playButton.setVisibility(VISIBLE);
-                }
-            });
-            player.start();
+        switch(v.getId()){
+            case R.id.view_video_play:
+                playButton.setVisibility(INVISIBLE);
+
+                player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                    @Override
+                    public void onCompletion(MediaPlayer mp) {
+                        playButton.setVisibility(VISIBLE);
+                    }
+                });
+                player.start();
+                break;
+
+            case R.id.view_video_pause:
+                pauseButton.setVisibility(INVISIBLE);
+                player.resume();
+                break;
+
+            case R.id.view_video_content:
+                player.pause();
+                pauseButton.setVisibility(VISIBLE);
+                break;
         }
     }
 }

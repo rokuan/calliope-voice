@@ -256,27 +256,12 @@ public class HomeActivity extends FragmentActivity implements View.OnTouchListen
         }
 
         if (requestCode == RequestCode.REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            //Bitmap pictureThumbnail = data.getParcelableExtra("data");
-                /*Bundle extras = data.getExtras();
-                Bitmap imageBitmap = (Bitmap) extras.get("data");
-                // Do other work with full size photo saved in mLocationForPhotos
-
-                ImageView imageView = new ImageView(this);
-                imageView.setImageBitmap(imageBitmap);
-                viewAdapter.add(imageView);*/
             Uri pictureUri = data.getData();
             addImage(pictureUri);
             Log.i("REQUEST_IMAGE_CAPTURE", "OK");
         } else if(requestCode == RequestCode.REQUEST_VIDEO_CAPTURE && resultCode == RESULT_OK){
-            //Bitmap videoThumbnail = data.getParcelableExtra("data");
-            /*Bundle extras = data.getExtras();
-            Bitmap imageBitmap = (Bitmap) extras.get("data");*/
             Uri videoUri = data.getData();
-            VideoFileSource video = new VideoFileSource(videoUri);
-            VideoFileView v = new VideoFileView(this, videoUri);
-
-            sources.add(video);
-            viewAdapter.add(v);
+            addVideo(videoUri);
             Log.i("REQUEST_VIDEO_CAPTURE", "OK");
         } else if(requestCode == RequestCode.REQUEST_IMAGE_PICK && resultCode == RESULT_OK){
             Uri pictureUri = data.getData();
@@ -302,6 +287,14 @@ public class HomeActivity extends FragmentActivity implements View.OnTouchListen
 
         sources.add(textSrc);
         viewAdapter.add(textView);
+    }
+
+    private void addVideo(Uri videoUri){
+        VideoFileSource video = new VideoFileSource(videoUri);
+        VideoFileView v = new VideoFileView(this, videoUri);
+
+        sources.add(video);
+        viewAdapter.add(v);
     }
 
     @Override
@@ -336,6 +329,14 @@ public class HomeActivity extends FragmentActivity implements View.OnTouchListen
 
     public void insertView(View w){
         viewAdapter.add(w);
+    }
+
+    public void setFreeSpeechEnabled(boolean enabled){
+
+    }
+
+    public void requestAdditionalAttribute(String attributeTag, String attribute){
+
     }
 
     class ViewAdapter extends ArrayAdapter<View> {

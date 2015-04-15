@@ -35471,7 +35471,7 @@ pied-de-poule;ADJECTIVE,COMMON_NAME
 pied-d'oeuvre;COMMON_NAME
 piedmont;COMMON_NAME
 pied-noir;ADJECTIVE,COMMON_NAME
-pied;COMMON_NAME
+pied;COMMON_NAME,MEAN_OF_TRANSPORT
 pied-plat;COMMON_NAME
 pieds-de-biche;COMMON_NAME
 pieds-de-coq;COMMON_NAME

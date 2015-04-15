@@ -39,12 +39,14 @@ public class CalliopeSQLiteOpenHelper extends SQLiteOpenHelper implements WordDa
     private static final int CONJUGATION = 1;
     private static final int WORDS = 2;
     private static final int COUNTRIES = 3;
+    private static final int FIRSTNAMES = 4;
 
     private static final String[] TABLES = new String[]{
             "verbs",
             "conjugation",
             "words",
-            "countries"
+            "countries",
+            "firstnames"
     };
 
     private static final String[] excludeNumericalPosition = new String[]{
@@ -82,6 +84,11 @@ public class CalliopeSQLiteOpenHelper extends SQLiteOpenHelper implements WordDa
     public static final String CITY_NAME = "city_name";*/
     /*public static final String CITY_FR_NAME = "city_name";
     public static final String CITY_EN_NAME = "city_en_name"*/
+
+    public static final String FIRSTNAME_ID = "firstname_id";
+    public static final String FIRSTNAME_VALUE = "firstname_value";
+    public static final String FIRSTNAME_GENRE = "firstname_genre";
+    // TODO: ajouter les autres colonnes
 
     private static final String VERB_QUERY = "CREATE TABLE " + TABLES[VERBS] + " (" +
             VERB_NAME + " TEXT PRIMARY KEY, " +
@@ -196,7 +203,7 @@ public class CalliopeSQLiteOpenHelper extends SQLiteOpenHelper implements WordDa
                 db.insert(TABLES[VERBS], null, values);
             }
         } catch (IOException e) {
-            Log.e("CalliopeSQL - loadAllVerbs", e.getMessage());
+            Log.e("CalliopeSQL", "(loadAllVerbs)" + e.getMessage());
         } finally {
             if(is != null){
                 try {
@@ -239,7 +246,7 @@ public class CalliopeSQLiteOpenHelper extends SQLiteOpenHelper implements WordDa
                 db.insert(TABLES[CONJUGATION], null, values);
             }
         } catch (IOException e) {
-            Log.e("CalliopeSQL - loadAllConjugatedVerbs", e.getMessage());
+            Log.e("CalliopeSQL", "(loadAllConjugatedVerbs)" + e.getMessage());
         } finally {
             if(is != null){
                 try {
@@ -277,7 +284,7 @@ public class CalliopeSQLiteOpenHelper extends SQLiteOpenHelper implements WordDa
                 db.insert(TABLES[WORDS], null, values);
             }
         } catch (IOException e) {
-            Log.e("CalliopeSQL - loadAllWords", e.getMessage());
+            Log.e("CalliopeSQL", "(loadAllWords)" + e.getMessage());
         } finally {
             if(is != null){
                 try {
@@ -317,7 +324,7 @@ public class CalliopeSQLiteOpenHelper extends SQLiteOpenHelper implements WordDa
                 db.insert(TABLES[COUNTRIES], null, values);
             }
         } catch (IOException e) {
-            Log.e("CalliopeSQL - loadAllCountries", e.getMessage());
+            Log.e("CalliopeSQL", "(loadAllCountries)" + e.getMessage());
         } finally {
             if(is != null){
                 try {
@@ -331,6 +338,8 @@ public class CalliopeSQLiteOpenHelper extends SQLiteOpenHelper implements WordDa
                 sc.close();
         }
     }
+
+
 
     public Verb<?> getVerb(String name){
         SQLiteDatabase db = this.getReadableDatabase();
@@ -356,8 +365,7 @@ public class CalliopeSQLiteOpenHelper extends SQLiteOpenHelper implements WordDa
         //Cursor matchingResults = db.query(TABLES[CONJUGATION], null, CONJUGATION_VALUE + " LIKE ? || '%'", new String[]{ conjugatedVerb }, null, null, null);
         Cursor matchingResults = db.query(TABLES[CONJUGATION], null, CONJUGATION_VALUE + " = ?", new String[]{ conjugatedVerb }, null, null, null);
 
-        if(matchingResults.getCount() > 0){
-            matchingResults.moveToFirst();
+        if(matchingResults.moveToFirst()){
             VerbConjugation result = CalliopeVerbConjugation.buildFromCursor(matchingResults);
             String verbName = matchingResults.getString(1);
 

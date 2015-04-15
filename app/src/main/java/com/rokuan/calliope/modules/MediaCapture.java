@@ -26,7 +26,8 @@ import java.util.List;
  */
 public class MediaCapture extends IntentModule {
     //private static final String PICTURES_PATH = "calliope/pictures/";
-    private static final String MEDIA_REGEX = "(camescope|caméra|((photo|vidéo)(s?)))";
+    //private static final String MEDIA_REGEX = "(microphone|caméscope|caméra|((photo|vidéo)(s?)))";
+    private static final String MEDIA_REGEX = "(microphone|caméscope|caméra|photo|vidéo)";
 
     public MediaCapture(Context c) {
         super(c);
@@ -73,7 +74,8 @@ public class MediaCapture extends IntentModule {
                         case DISPLAY:
                         case DISPLAY_SHOW:
                         case SHOW:
-                            openCameraOnVideoMode();
+                            //openCameraOnVideoMode();
+                            captureVideo();
                             return true;
                     }
                 }
