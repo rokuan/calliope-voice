@@ -7,7 +7,7 @@ import com.rokuan.calliopecore.sentence.structure.InterpretationObject;
 /**
  * Created by LEBEAU Christophe on 12/04/2015.
  */
-public class SearchModule extends IntentModule {
+public class SearchModule extends ContextModule {
     private static final String ITEM_CONTENT_REGEX = "((vidéo|chanson|musique|image)(s?))";
 
     public SearchModule(Context c) {

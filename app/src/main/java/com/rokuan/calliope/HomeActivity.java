@@ -20,16 +20,13 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.rokuan.calliope.constants.RequestCode;
 import com.rokuan.calliope.db.CalliopeSQLiteOpenHelper;
-import com.rokuan.calliope.extract.ExtractionListener;
-import com.rokuan.calliope.extract.TextExtractionListener;
-import com.rokuan.calliope.modules.AlarmHandler;
+import com.rokuan.calliope.modules.AlarmModule;
 import com.rokuan.calliope.modules.CalliopeModule;
-import com.rokuan.calliope.modules.GoogleMaps;
-import com.rokuan.calliope.modules.MediaCapture;
+import com.rokuan.calliope.modules.GoogleMapsModule;
+import com.rokuan.calliope.modules.MediaCaptureModule;
 import com.rokuan.calliope.source.ImageFileSource;
 import com.rokuan.calliope.source.SourceObject;
 import com.rokuan.calliope.source.TextSource;
@@ -107,9 +104,9 @@ public class HomeActivity extends FragmentActivity implements View.OnTouchListen
     }
 
     public void addModules(){
-        modules.add(new GoogleMaps(this));
-        modules.add(new MediaCapture(this));
-        modules.add(new AlarmHandler(this));
+        modules.add(new GoogleMapsModule(this));
+        modules.add(new MediaCaptureModule(this));
+        modules.add(new AlarmModule(this));
     }
 
     @Override
@@ -349,15 +346,19 @@ public class HomeActivity extends FragmentActivity implements View.OnTouchListen
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent){
-            return this.getItem(position);
+            //return this.getItem(position);
+            View mainView = inflater.inflate(R.layout.message_item, parent, false);
+            ViewGroup layout = (ViewGroup)mainView.findViewById(R.id.message_item_placeholder);
+            layout.addView(this.getItem(position));
+            return mainView;
         }
 
-        @Override
+        /*@Override
         public void add(View v){
             View mainView = inflater.inflate(R.layout.message_item, null);
             ViewGroup layout = (ViewGroup)mainView.findViewById(R.id.message_item_placeholder);
             layout.addView(v);
             super.add(mainView);
-        }
+        }*/
     }
 }

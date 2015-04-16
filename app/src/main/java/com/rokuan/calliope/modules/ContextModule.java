@@ -5,10 +5,10 @@ import android.content.Context;
 /**
  * Created by LEBEAU Christophe on 24/03/2015.
  */
-public abstract class IntentModule implements CalliopeModule {
+public abstract class ContextModule implements CalliopeModule {
     private Context context;
 
-    public IntentModule(Context c){
+    public ContextModule(Context c){
         context = c;
     }
 

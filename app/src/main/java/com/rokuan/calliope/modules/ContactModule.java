@@ -10,13 +10,13 @@ import com.rokuan.calliopecore.sentence.structure.QuestionObject;
 /**
  * Created by LEBEAU Christophe on 25/03/2015.
  */
-public class ContactList extends IntentModule {
+public class ContactModule extends ContextModule {
     private static final String CONTENT_REGEX = "(contact(s?))";
     private static final String CONTACT_INFO_REGEX = "(information(s?))";
     private static final String CONTACT_ATTRIBUTE_REGEX = "(numéro|nom|prénom|adresse|(e?)mail)";
     private static final String CONTACT_REGEX = "(" + CONTENT_REGEX + " | "+ CONTACT_INFO_REGEX +" | " + CONTACT_ATTRIBUTE_REGEX + ")";
 
-    public ContactList(Context c) {
+    public ContactModule(Context c) {
         super(c);
     }
 

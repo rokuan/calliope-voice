@@ -14,11 +14,11 @@ import com.rokuan.calliopecore.sentence.structure.data.place.PlaceObject;
 /**
  * Created by LEBEAU Christophe on 24/03/2015.
  */
-public class GoogleMaps extends IntentModule {
+public class GoogleMapsModule extends ContextModule {
     private static final String PLACES_REGEX = "((restaurant|cinéma)(s?))";
     private static final String MAP_REGEX = "(carte|map)";
 
-    public GoogleMaps(Context context){
+    public GoogleMapsModule(Context context){
         super(context);
     }
 

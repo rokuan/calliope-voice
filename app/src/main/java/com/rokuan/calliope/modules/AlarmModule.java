@@ -17,12 +17,12 @@ import java.util.Date;
 /**
  * Created by LEBEAU Christophe on 05/04/2015.
  */
-public class AlarmHandler extends IntentModule {
+public class AlarmModule extends ContextModule {
     private static final String CONTENT_ALARM_REGEX = "(alarme)";
     private static final String CONTENT_TIMER_REGEX = "(minuteur|chronomètre|compteur|timer)";
     private static final String CONTENT_REGEX = CONTENT_ALARM_REGEX + "|" + CONTENT_TIMER_REGEX;
 
-    public AlarmHandler(Context c) {
+    public AlarmModule(Context c) {
         super(c);
     }
 

@@ -24,12 +24,12 @@ import java.util.List;
 /**
  * Created by LEBEAU Christophe on 24/03/2015.
  */
-public class MediaCapture extends IntentModule {
+public class MediaCaptureModule extends ContextModule {
     //private static final String PICTURES_PATH = "calliope/pictures/";
     //private static final String MEDIA_REGEX = "(microphone|caméscope|caméra|((photo|vidéo)(s?)))";
     private static final String MEDIA_REGEX = "(microphone|caméscope|caméra|photo|vidéo)";
 
-    public MediaCapture(Context c) {
+    public MediaCaptureModule(Context c) {
         super(c);
     }
 

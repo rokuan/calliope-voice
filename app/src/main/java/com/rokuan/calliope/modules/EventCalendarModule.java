@@ -7,8 +7,8 @@ import com.rokuan.calliopecore.sentence.structure.InterpretationObject;
 /**
  * Created by LEBEAU Christophe on 14/04/2015.
  */
-public class EventCalendar extends IntentModule {
-    public EventCalendar(Context c) {
+public class EventCalendarModule extends ContextModule {
+    public EventCalendarModule(Context c) {
         super(c);
     }
 
