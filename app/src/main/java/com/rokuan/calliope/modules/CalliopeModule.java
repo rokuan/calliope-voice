@@ -1,11 +1,19 @@
 package com.rokuan.calliope.modules;
 
-import com.rokuan.calliopecore.sentence.structure.InterpretationObject;
+
+import com.rokuan.calliope.HomeActivity;
 
 /**
  * Created by LEBEAU Christophe on 24/03/2015.
  */
-public interface CalliopeModule {
-    boolean canHandle(InterpretationObject object);
-    boolean submit(InterpretationObject object);
+public abstract class CalliopeModule implements InterpretationModule {
+    private HomeActivity activity;
+
+    public CalliopeModule(HomeActivity a){
+        activity = a;
+    }
+
+    public final HomeActivity getActivity(){
+        return activity;
+    }
 }

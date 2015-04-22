@@ -2,6 +2,7 @@ package com.rokuan.calliope;
 
 import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.speech.RecognitionListener;
@@ -21,12 +22,19 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
 import com.rokuan.calliope.constants.RequestCode;
 import com.rokuan.calliope.db.CalliopeSQLiteOpenHelper;
 import com.rokuan.calliope.modules.AlarmModule;
 import com.rokuan.calliope.modules.CalliopeModule;
 import com.rokuan.calliope.modules.GoogleMapsModule;
+import com.rokuan.calliope.modules.InterpretationModule;
 import com.rokuan.calliope.modules.MediaCaptureModule;
+import com.rokuan.calliope.modules.WeatherModule;
 import com.rokuan.calliope.source.ImageFileSource;
 import com.rokuan.calliope.source.SourceObject;
 import com.rokuan.calliope.source.TextSource;
@@ -42,7 +50,17 @@ import java.util.List;
 /**
  * Created by LEBEAU Christophe on 24/03/2015.
  */
-public class HomeActivity extends FragmentActivity implements View.OnTouchListener, RecognitionListener, View.OnClickListener {
+public class HomeActivity extends FragmentActivity
+        implements View.OnTouchListener, RecognitionListener, View.OnClickListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
+    private GoogleApiClient mGoogleApiClient;
+    private Location mCurrentLocation;
+    private LocationRequest mLocationRequest;
+
+    private boolean clientConnected = false;
+
+    //private static final String REQUESTING_LOCATION_UPDATES_KEY = "location_update_request";
+    private static final String LOCATION_KEY = "location";
+
     private SpeechRecognizer speech;
     private CalliopeSQLiteOpenHelper db;
     //private TextView messageBox;
@@ -53,14 +71,18 @@ public class HomeActivity extends FragmentActivity implements View.OnTouchListen
     private ListView contentListView;
     private ViewAdapter viewAdapter;
 
-    private List<CalliopeModule> modules = new ArrayList<CalliopeModule>();
+    private List<InterpretationModule> modules = new ArrayList<InterpretationModule>();
     private LinkedList<SourceObject> sources = new LinkedList<>();
 
     @Override
-    public void onCreate(Bundle savedInstanceState){
+    protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
+
+        if(savedInstanceState != null){
+            mCurrentLocation = savedInstanceState.getParcelable(LOCATION_KEY);
+        }
 
         recognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
 
@@ -100,13 +122,16 @@ public class HomeActivity extends FragmentActivity implements View.OnTouchListen
             }
         });
 
-        addModules();
+        //buildGoogleApiClient();
+        //createLocationRequest();
+        //startLocationUpdates();
     }
 
-    public void addModules(){
+    private void addModules(){
         modules.add(new GoogleMapsModule(this));
         modules.add(new MediaCaptureModule(this));
         modules.add(new AlarmModule(this));
+        modules.add(new WeatherModule(this));
     }
 
     @Override
@@ -121,6 +146,35 @@ public class HomeActivity extends FragmentActivity implements View.OnTouchListen
         if(db != null) {
             db.close();
         }
+
+        stopLocationUpdates();
+    }
+
+    protected void startLocationUpdates() {
+        mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(60000);
+        mLocationRequest.setFastestInterval(30000);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_LOW_POWER);
+        LocationServices.FusedLocationApi.requestLocationUpdates(
+                mGoogleApiClient, mLocationRequest, this);
+    }
+
+    protected void stopLocationUpdates() {
+        if(clientConnected) {
+            LocationServices.FusedLocationApi.removeLocationUpdates(
+                    mGoogleApiClient, this);
+        }
+    }
+
+    public Location getCurrentLocation(){
+        return mCurrentLocation;
+    }
+
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        /*savedInstanceState.putBoolean(REQUESTING_LOCATION_UPDATES_KEY,
+                mRequestingLocationUpdates);*/
+        savedInstanceState.putParcelable(LOCATION_KEY, mCurrentLocation);
+        super.onSaveInstanceState(savedInstanceState);
     }
 
     @Override
@@ -131,6 +185,16 @@ public class HomeActivity extends FragmentActivity implements View.OnTouchListen
 
         speech = SpeechRecognizer.createSpeechRecognizer(this);
         speech.setRecognitionListener(this);
+
+        //if (mGoogleApiClient.isConnected() && !mRequestingLocationUpdates) {
+        addModules();
+
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
+        mGoogleApiClient.connect();
     }
 
     @Override
@@ -239,8 +303,9 @@ public class HomeActivity extends FragmentActivity implements View.OnTouchListen
     }
 
     private void interpret(InterpretationObject object){
-        for(CalliopeModule module: modules){
+        for(InterpretationModule module: modules){
             if(module.canHandle(object) && module.submit(object)){
+                Log.i("HomeActivity.interpret", "Handled by " + module.toString());
                 return;
             }
         }
@@ -324,6 +389,14 @@ public class HomeActivity extends FragmentActivity implements View.OnTouchListen
         Toast.makeText(this, value, Toast.LENGTH_LONG).show();
     }*/
 
+    public void startProcess(){
+        // TODO:
+    }
+
+    public void endProcess(){
+        // TODO:
+    }
+
     public void insertView(View w){
         viewAdapter.add(w);
     }
@@ -336,6 +409,29 @@ public class HomeActivity extends FragmentActivity implements View.OnTouchListen
 
     }
 
+    @Override
+    public void onConnected(Bundle connectionHint) {
+        clientConnected = true;
+        mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        Log.i("onConnected", "connected");
+        startLocationUpdates();
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        mCurrentLocation = location;
+    }
+
     class ViewAdapter extends ArrayAdapter<View> {
         private LayoutInflater inflater;
 
@@ -346,19 +442,22 @@ public class HomeActivity extends FragmentActivity implements View.OnTouchListen
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent){
-            //return this.getItem(position);
-            View mainView = inflater.inflate(R.layout.message_item, parent, false);
+            return this.getItem(position);
+            /*View mainView = inflater.inflate(R.layout.message_item, parent, false);
             ViewGroup layout = (ViewGroup)mainView.findViewById(R.id.message_item_placeholder);
+
+            layout.removeAllViews();
             layout.addView(this.getItem(position));
-            return mainView;
+
+            return mainView;*/
         }
 
-        /*@Override
+        @Override
         public void add(View v){
             View mainView = inflater.inflate(R.layout.message_item, null);
             ViewGroup layout = (ViewGroup)mainView.findViewById(R.id.message_item_placeholder);
             layout.addView(v);
             super.add(mainView);
-        }*/
+        }
     }
 }

@@ -2,16 +2,17 @@ package com.rokuan.calliope.modules;
 
 import android.content.Context;
 
+import com.rokuan.calliope.HomeActivity;
 import com.rokuan.calliopecore.sentence.structure.InterpretationObject;
 
 /**
  * Created by LEBEAU Christophe on 12/04/2015.
  */
-public class SearchModule extends ContextModule {
+public class SearchModule extends CalliopeModule {
     private static final String ITEM_CONTENT_REGEX = "((vidéo|chanson|musique|image)(s?))";
 
-    public SearchModule(Context c) {
-        super(c);
+    public SearchModule(HomeActivity a) {
+        super(a);
     }
 
     @Override

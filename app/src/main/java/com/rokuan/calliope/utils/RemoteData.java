@@ -63,11 +63,15 @@ public class RemoteData {
             connection = (HttpURLConnection)url.openConnection();
 
             if(properties != null) {
-                if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+                //if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
                     for (Map.Entry<String, Object> item : properties.valueSet()) {
                         connection.addRequestProperty(item.getKey(), item.getValue().toString());
                     }
-                }
+                /*} else {
+                    for(String key: properties.keySet()){
+
+                    }
+                }*/
             }
 
             connection.setConnectTimeout(CONNECT_TIMEOUT);
@@ -85,7 +89,7 @@ public class RemoteData {
             reader.close();
 
             return new JSONObject(json.toString());
-        }catch(Exception e){
+        } catch(Exception e) {
             e.printStackTrace();
             return null;
         } finally {

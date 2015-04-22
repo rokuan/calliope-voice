@@ -4,28 +4,49 @@
     android:layout_height="wrap_content">
     <TextView
         android:id="@+id/view_weather_place_name"
-        android:textSize="20dp"
+        android:textColor="#000000"
         android:textStyle="bold"
         android:text="Paris,FR"
         android:padding="5dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
+    <View
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:background="@color/main_color"
+        android:layout_width="match_parent"
+        android:layout_height="1dp" />
     <LinearLayout
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="200dp">
+        android:layout_height="100dp">
 
+        <LinearLayout
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent">
         <ImageView
             android:id="@+id/view_weather_image"
             android:scaleType="fitCenter"
-            android:layout_width="100dp"
-            android:layout_height="100dp" />
+            android:layout_width="90dp"
+            android:layout_height="90dp" />
+        </LinearLayout>
         <LinearLayout
             android:padding="5dp"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:orientation="horizontal"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:gravity="center">
 
+            <TextView
+                android:id="@+id/view_weather_temperature"
+                android:text="15°C"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>

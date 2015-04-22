@@ -27,7 +27,7 @@ public class OpenWeatherMapAPI {
     /*private static final String WEATHER_QUERY = OPENWEATHER_API_ADDRESS + "weather?id=%s";
     private static final String FORECAST_QUERY = OPENWEATHER_API_ADDRESS + "forecast/daily?id=%s&units=metric&cnt=%d";*/
     private static final String WEATHER_QUERY = OPENWEATHER_API_ADDRESS + "weather?";
-    private static final String FORECAST_QUERY = OPENWEATHER_API_ADDRESS + "forecast/daily?units=metric&cnt=%d";
+    private static final String FORECAST_QUERY = OPENWEATHER_API_ADDRESS + "forecast/daily?units=metric&cnt=%d&";
     private static final String ICON_QUERY = OPENWEATHER_ICON_ADDRESS;
 
     private static final int ID_QUERY_TYPE = 0;

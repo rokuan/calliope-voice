@@ -13,7 +13,9 @@ import android.widget.Toast;
 import com.rokuan.calliope.HomeActivity;
 import com.rokuan.calliope.constants.RequestCode;
 import com.rokuan.calliopecore.sentence.Action;
+import com.rokuan.calliopecore.sentence.structure.ComplementObject;
 import com.rokuan.calliopecore.sentence.structure.InterpretationObject;
+import com.rokuan.calliopecore.sentence.structure.NominalGroup;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -24,13 +26,13 @@ import java.util.List;
 /**
  * Created by LEBEAU Christophe on 24/03/2015.
  */
-public class MediaCaptureModule extends ContextModule {
+public class MediaCaptureModule extends CalliopeModule {
     //private static final String PICTURES_PATH = "calliope/pictures/";
     //private static final String MEDIA_REGEX = "(microphone|caméscope|caméra|((photo|vidéo)(s?)))";
     private static final String MEDIA_REGEX = "(microphone|caméscope|caméra|photo|vidéo)";
 
-    public MediaCaptureModule(Context c) {
-        super(c);
+    public MediaCaptureModule(HomeActivity a) {
+        super(a);
     }
 
     @Override
@@ -40,9 +42,11 @@ public class MediaCaptureModule extends ContextModule {
 
     @Override
     public boolean submit(InterpretationObject object) {
-        if(object.what != null) {
-            if(object.what.object != null) {
-                if(object.what.object.startsWith("photo")) {
+        if(object.what != null && object.what.getType() == NominalGroup.GroupType.NOMINAL_GROUP) {
+            ComplementObject compl = (ComplementObject)object.what;
+
+            if(compl.object != null) {
+                if(compl.object.startsWith("photo")) {
                     switch ((Action.VerbAction) object.action) {
                         case TAKE:
                         case TAKE_AGAIN:
@@ -57,7 +61,7 @@ public class MediaCaptureModule extends ContextModule {
                             openCameraOnPictureMode();
                             return true;
                     }
-                } else if(object.what.object.startsWith("vidéo")){
+                } else if(compl.object.startsWith("vidéo")){
                     switch((Action.VerbAction)object.action){
                         case TAKE:
                         case TAKE_AGAIN:
@@ -66,7 +70,7 @@ public class MediaCaptureModule extends ContextModule {
                             captureVideo();
                             return true;
                     }
-                } else if(object.what.object.startsWith("caméra")){
+                } else if(compl.object.startsWith("caméra")){
                     switch ((Action.VerbAction)object.action){
                         case START:
                         case OPEN:
@@ -88,19 +92,19 @@ public class MediaCaptureModule extends ContextModule {
     private void capturePhoto(){
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
-        if (intent.resolveActivity(this.getContext().getPackageManager()) != null) {
-            ((HomeActivity)this.getContext()).startActivityForResult(intent, RequestCode.REQUEST_IMAGE_CAPTURE);
+        if (intent.resolveActivity(this.getActivity().getPackageManager()) != null) {
+            this.getActivity().startActivityForResult(intent, RequestCode.REQUEST_IMAGE_CAPTURE);
         } else {
-            Toast.makeText(this.getContext(), "Aucune application ne prend en charge cette action", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this.getActivity(), "Aucune application ne prend en charge cette action", Toast.LENGTH_SHORT).show();
         }
     }
 
     private void captureVideo(){
         Intent takeVideoIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
-        if (takeVideoIntent.resolveActivity(this.getContext().getPackageManager()) != null) {
-            ((HomeActivity)this.getContext()).startActivityForResult(takeVideoIntent, RequestCode.REQUEST_VIDEO_CAPTURE);
+        if (takeVideoIntent.resolveActivity(this.getActivity().getPackageManager()) != null) {
+            this.getActivity().startActivityForResult(takeVideoIntent, RequestCode.REQUEST_VIDEO_CAPTURE);
         } else {
-            Toast.makeText(this.getContext(), "Aucune application ne prend en charge cette action", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this.getActivity(), "Aucune application ne prend en charge cette action", Toast.LENGTH_SHORT).show();
         }
     }
 

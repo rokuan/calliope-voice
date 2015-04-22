@@ -22,15 +22,19 @@ public class WeatherView extends LinearLayout {
     }
 
     private void initWeatherView(){
+        this.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+
         LayoutInflater inflater = (LayoutInflater)this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         inflater.inflate(R.layout.view_weather, this);
 
         TextView placeName = (TextView)this.findViewById(R.id.view_weather_place_name);
         ImageView weatherImage = (ImageView)this.findViewById(R.id.view_weather_image);
+        TextView temperature = (TextView)this.findViewById(R.id.view_weather_temperature);
 
         placeName.setText(data.getPlace().toString());
         weatherImage.setImageBitmap(data.getWeatherImage());
+        temperature.setText(Math.round(data.getTemperature()) + "°C");
         // TODO: ajouter les autres champs
     }
 }

@@ -2,19 +2,22 @@ package com.rokuan.calliope.modules;
 
 import android.content.Context;
 
+import com.rokuan.calliope.HomeActivity;
 import com.rokuan.calliopecore.sentence.Action;
+import com.rokuan.calliopecore.sentence.structure.ComplementObject;
 import com.rokuan.calliopecore.sentence.structure.InterpretationObject;
+import com.rokuan.calliopecore.sentence.structure.NominalGroup;
 
 /**
  * Created by LEBEAU Christophe on 15/04/2015.
  */
-public class MessageModule extends ContextModule {
+public class MessageModule extends CalliopeModule {
     private static final String SMS_CONTENT_REGEX = "(message|SMS|sms)";
     private static final String MAIL_CONTENT_REGEX = "(mail|e-mail)";
     private static final String CONTENT_REGEX = "(" + SMS_CONTENT_REGEX + "|" + MAIL_CONTENT_REGEX + ")";
 
-    public MessageModule(Context c) {
-        super(c);
+    public MessageModule(HomeActivity a) {
+        super(a);
     }
 
     @Override
@@ -24,8 +27,10 @@ public class MessageModule extends ContextModule {
 
     @Override
     public boolean submit(InterpretationObject object) {
-        if(object.what != null){
-            if(object.what.object.matches(SMS_CONTENT_REGEX)){
+        if(object.what != null && object.what.getType() == NominalGroup.GroupType.NOMINAL_GROUP){
+            ComplementObject compl = (ComplementObject)object.what;
+
+            if(compl.object.matches(SMS_CONTENT_REGEX)){
                 switch((Action.VerbAction)object.action){
                     case CREATE_AGAIN:
                     case MAKE:
@@ -35,11 +40,16 @@ public class MessageModule extends ContextModule {
                     case COMPOSE:
                         // TODO:
                         return true;
+
+                    case SEND:
+
+                        return true;
                 }
-            } else if(object.what.object.matches(MAIL_CONTENT_REGEX)) {
+            } else if(compl.object.matches(MAIL_CONTENT_REGEX)) {
 
             }
         }
+
         return false;
     }
 }

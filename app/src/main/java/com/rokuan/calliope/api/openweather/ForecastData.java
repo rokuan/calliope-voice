@@ -17,7 +17,7 @@ import java.util.List;
  * Created by LEBEAU Christophe on 16/04/2015.
  */
 public class ForecastData {
-    static class SingleWeatherData {
+    public static class SingleWeatherData {
         private static final int TEMP_DAY = 0;
         private static final int TEMP_MIN = 1;
         private static final int TEMP_MAX = 2;
@@ -130,6 +130,14 @@ public class ForecastData {
 
     private City city;
     private List<SingleWeatherData> forecast = new ArrayList<>();
+
+    public City getCity() {
+        return city;
+    }
+
+    public List<SingleWeatherData> getForecast(){
+        return forecast;
+    }
 
     public static ForecastData buildFromJSON(JSONObject json){
         try {

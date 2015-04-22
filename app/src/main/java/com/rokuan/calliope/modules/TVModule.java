@@ -2,6 +2,7 @@ package com.rokuan.calliope.modules;
 
 import android.content.Context;
 
+import com.rokuan.calliope.HomeActivity;
 import com.rokuan.calliopecore.sentence.Action;
 import com.rokuan.calliopecore.sentence.structure.InterpretationObject;
 import com.rokuan.calliopecore.sentence.structure.QuestionObject;
@@ -9,12 +10,12 @@ import com.rokuan.calliopecore.sentence.structure.QuestionObject;
 /**
  * Created by LEBEAU Christophe on 16/04/2015.
  */
-public class TVModule extends ContextModule {
+public class TVModule extends CalliopeModule {
     private static final String WHERE_CONTENT_REGEX = "(télé((vision)?))";
     private static final String CONTENT_REGEX = "(émission|programme|chaîne)";
 
-    public TVModule(Context c) {
-        super(c);
+    public TVModule(HomeActivity a) {
+        super(a);
     }
 
     @Override

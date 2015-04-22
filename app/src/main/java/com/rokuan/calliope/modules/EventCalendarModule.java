@@ -2,14 +2,15 @@ package com.rokuan.calliope.modules;
 
 import android.content.Context;
 
+import com.rokuan.calliope.HomeActivity;
 import com.rokuan.calliopecore.sentence.structure.InterpretationObject;
 
 /**
  * Created by LEBEAU Christophe on 14/04/2015.
  */
-public class EventCalendarModule extends ContextModule {
-    public EventCalendarModule(Context c) {
-        super(c);
+public class EventCalendarModule extends CalliopeModule {
+    public EventCalendarModule(HomeActivity a) {
+        super(a);
     }
 
     @Override

@@ -4,8 +4,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 
+import com.rokuan.calliope.HomeActivity;
 import com.rokuan.calliopecore.sentence.Action;
+import com.rokuan.calliopecore.sentence.structure.ComplementObject;
 import com.rokuan.calliopecore.sentence.structure.InterpretationObject;
+import com.rokuan.calliopecore.sentence.structure.NominalGroup;
 import com.rokuan.calliopecore.sentence.structure.OrderObject;
 import com.rokuan.calliopecore.sentence.structure.QuestionObject;
 import com.rokuan.calliopecore.sentence.structure.data.place.MonumentObject;
@@ -14,19 +17,22 @@ import com.rokuan.calliopecore.sentence.structure.data.place.PlaceObject;
 /**
  * Created by LEBEAU Christophe on 24/03/2015.
  */
-public class GoogleMapsModule extends ContextModule {
+public class GoogleMapsModule extends CalliopeModule {
     private static final String PLACES_REGEX = "((restaurant|cinéma)(s?))";
     private static final String MAP_REGEX = "(carte|map)";
 
-    public GoogleMapsModule(Context context){
-        super(context);
+    public GoogleMapsModule(HomeActivity a){
+        super(a);
     }
 
     @Override
     public boolean canHandle(InterpretationObject object) {
-        if(object.what != null && object.what.object != null
-                && (object.what.object.matches(PLACES_REGEX) || object.what.object.matches(MAP_REGEX))){
-            return true;
+        if(object.what != null && object.what.getType() == NominalGroup.GroupType.NOMINAL_GROUP){
+            ComplementObject compl = (ComplementObject)object.what;
+
+            if(compl.object.matches(PLACES_REGEX) || compl.object.matches(MAP_REGEX)){
+                return true;
+            }
         }
 
         if(object.getType() == InterpretationObject.RequestType.QUESTION){
@@ -79,22 +85,24 @@ public class GoogleMapsModule extends ContextModule {
                 case SHOW:
                 case FIND:
                 case SEARCH:
-                    if (object.what != null) {
-                        if (object.what.object.matches(PLACES_REGEX)) {
-                            String placeType = getTypeFromString(object.what.object);
+                    if (object.what != null && object.what.getType() == NominalGroup.GroupType.NOMINAL_GROUP) {
+                        ComplementObject compl = (ComplementObject)object.what;
+
+                        if (compl.object.matches(PLACES_REGEX)) {
+                            String placeType = getTypeFromString(compl.object);
                             Uri gmmIntentUri = Uri.parse("geo:0,0")
                                     .buildUpon()
                                     .appendQueryParameter("q", placeType)
                                     .build();
                             Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
                             mapIntent.setPackage("com.google.android.apps.maps");
-                            this.getContext().startActivity(mapIntent);
+                            this.getActivity().startActivity(mapIntent);
                             return true;
-                        } else if (object.what.object.matches(MAP_REGEX)) {
+                        } else if (compl.object.matches(MAP_REGEX)) {
                             Uri gmmIntentUri = Uri.parse("geo:0,0");
                             Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
                             mapIntent.setPackage("com.google.android.apps.maps");
-                            this.getContext().startActivity(mapIntent);
+                            this.getActivity().startActivity(mapIntent);
                             return true;
                         }
                     }
@@ -141,7 +149,7 @@ public class GoogleMapsModule extends ContextModule {
         Uri gmmIntentUri = Uri.parse(queryString);
         Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
         mapIntent.setPackage("com.google.android.apps.maps");
-        this.getContext().startActivity(mapIntent);
+        this.getActivity().startActivity(mapIntent);
     }
 
     private static String getTypeFromString(String type){

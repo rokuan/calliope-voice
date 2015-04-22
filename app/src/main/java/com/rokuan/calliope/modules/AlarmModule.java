@@ -8,7 +8,9 @@ import android.util.Log;
 import com.rokuan.calliope.HomeActivity;
 import com.rokuan.calliope.view.AlarmView;
 import com.rokuan.calliopecore.sentence.Action;
+import com.rokuan.calliopecore.sentence.structure.ComplementObject;
 import com.rokuan.calliopecore.sentence.structure.InterpretationObject;
+import com.rokuan.calliopecore.sentence.structure.NominalGroup;
 import com.rokuan.calliopecore.sentence.structure.data.time.SingleTimeObject;
 
 import java.util.Calendar;
@@ -17,13 +19,13 @@ import java.util.Date;
 /**
  * Created by LEBEAU Christophe on 05/04/2015.
  */
-public class AlarmModule extends ContextModule {
+public class AlarmModule extends CalliopeModule {
     private static final String CONTENT_ALARM_REGEX = "(alarme)";
     private static final String CONTENT_TIMER_REGEX = "(minuteur|chronomètre|compteur|timer)";
     private static final String CONTENT_REGEX = CONTENT_ALARM_REGEX + "|" + CONTENT_TIMER_REGEX;
 
-    public AlarmModule(Context c) {
-        super(c);
+    public AlarmModule(HomeActivity a) {
+        super(a);
     }
 
     @Override
@@ -35,8 +37,8 @@ public class AlarmModule extends ContextModule {
                 return true;
         }
 
-        if(object.what != null && object.what.object != null && object.what.object.matches(CONTENT_REGEX)){
-            return true;
+        if(object.what != null && object.what.getType() == NominalGroup.GroupType.NOMINAL_GROUP){
+            return ((ComplementObject)object.what).object.matches(CONTENT_REGEX);
         }
 
         return false;
@@ -59,8 +61,12 @@ public class AlarmModule extends ContextModule {
                 return true;
         }
 
-        if(object.what != null && object.what.object != null){
-            if(object.what.object.matches(CONTENT_ALARM_REGEX)){
+        if(object.what != null && object.what.getType() == NominalGroup.GroupType.NOMINAL_GROUP){
+            ComplementObject compl = (ComplementObject)object.what;
+
+            if(compl.object.matches(CONTENT_ALARM_REGEX)){
+                System.out.println("NEW ALARM");
+
                 switch((Action.VerbAction)object.action){
                     case CREATE_AGAIN:
                     case MAKE:
@@ -75,7 +81,9 @@ public class AlarmModule extends ContextModule {
                         setNewAlarm("Calliope - Alarm", time);
                         return true;
                 }
-            } else if(object.what.object.matches(CONTENT_TIMER_REGEX)){
+            } else if(compl.object.matches(CONTENT_TIMER_REGEX)){
+                System.out.println("NEW TIMER");
+
                 switch((Action.VerbAction)object.action){
                     case START:
                     case ACTIVATE:
@@ -144,11 +152,11 @@ public class AlarmModule extends ContextModule {
                 .putExtra(AlarmClock.EXTRA_MINUTES, minutes)
                 .putExtra(AlarmClock.EXTRA_SKIP_UI, true);
 
-        if (intent.resolveActivity(this.getContext().getPackageManager()) != null) {
-            this.getContext().startActivity(intent);
+        if (intent.resolveActivity(this.getActivity().getPackageManager()) != null) {
+            this.getActivity().startActivity(intent);
 
-            AlarmView aView = new AlarmView(this.getContext(), time);
-            ((HomeActivity)this.getContext()).insertView(aView);
+            AlarmView aView = new AlarmView(this.getActivity(), time);
+            this.getActivity().insertView(aView);
         }
     }
 
@@ -158,8 +166,8 @@ public class AlarmModule extends ContextModule {
                 .putExtra(AlarmClock.EXTRA_LENGTH, seconds)
                 .putExtra(AlarmClock.EXTRA_SKIP_UI, true);
 
-        if (intent.resolveActivity(this.getContext().getPackageManager()) != null) {
-            this.getContext().startActivity(intent);
+        if (intent.resolveActivity(this.getActivity().getPackageManager()) != null) {
+            this.getActivity().startActivity(intent);
         }
     }
 }

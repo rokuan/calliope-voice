@@ -3,6 +3,7 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 21
     buildToolsVersion "21.1.2"
+    compileOptions.encoding = 'ISO-8859-1'
 
     defaultConfig {
         applicationId "com.rokuan.calliope"
@@ -23,4 +24,5 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.android.support:appcompat-v7:22.0.0'
     compile files('libs/calliope-core.jar')
+    compile 'com.google.android.gms:play-services:7.0.0'
 }

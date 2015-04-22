@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import com.rokuan.calliope.constants.DataFile;
-import com.rokuan.calliopecore.parser.Interpreter;
+import com.rokuan.calliopecore.parser.Parser;
 import com.rokuan.calliopecore.parser.SpeechParser;
 import com.rokuan.calliopecore.parser.WordBuffer;
 import com.rokuan.calliopecore.parser.WordDatabase;
@@ -357,7 +357,6 @@ public class CalliopeSQLiteOpenHelper extends SQLiteOpenHelper implements WordDa
         return verb;
     }
 
-    //public VerbConjugation findConjugatedVerb(SQLiteDatabase db, String conjugatedVerb){
     public VerbConjugation findConjugatedVerb(String conjugatedVerb){
         SQLiteDatabase db = this.getReadableDatabase();
         //Cursor matchingResults = db.query(TABLES[CONJUGATION], null, "? LIKE " + CONJUGATION_VALUE + "% ORDER BY length(" + CONJUGATION_VERB + ")", new String[]{ conjugatedVerb }, null, null, null);
@@ -381,6 +380,10 @@ public class CalliopeSQLiteOpenHelper extends SQLiteOpenHelper implements WordDa
         return null;
     }
 
+    public boolean isAFirstName(String word){
+        // TODO:
+        return false;
+    }
 
     public Word findWord(String w){
         Word result = null;
@@ -408,11 +411,17 @@ public class CalliopeSQLiteOpenHelper extends SQLiteOpenHelper implements WordDa
             }
         }
 
-        if(Character.isUpperCase(w.charAt(0))){
-            return new Word(w, Word.WordType.PROPER_NAME);
-        }
-
         List<Word.WordType> wordTypes = new ArrayList<>();
+
+        if(Character.isUpperCase(w.charAt(0))){
+            wordTypes.add(Word.WordType.PROPER_NAME);
+
+            if(isAFirstName(w)){
+                wordTypes.add(Word.WordType.FIRSTNAME);
+            }
+
+            return new Word(w, wordTypes);
+        }
 
         if(w.endsWith("ième")){
             boolean isNumericalPosition = true;
@@ -514,7 +523,7 @@ public class CalliopeSQLiteOpenHelper extends SQLiteOpenHelper implements WordDa
 
     @Override
     public InterpretationObject parseSpeech(WordBuffer words) {
-        Interpreter interpreter = new Interpreter();
+        Parser interpreter = new Parser();
         return interpreter.parseInterpretationObject(words);
     }
 }

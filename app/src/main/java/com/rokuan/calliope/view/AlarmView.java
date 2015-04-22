@@ -24,18 +24,9 @@ public class AlarmView extends LinearLayout {
         initAlarmView();
     }
 
-    public AlarmView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        initAlarmView();
-    }
-
-    @TargetApi(11)
-    public AlarmView(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-        initAlarmView();
-    }
-
     private void initAlarmView(){
+        this.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+
         LayoutInflater inflater = (LayoutInflater)this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         inflater.inflate(R.layout.view_alarm, this);
