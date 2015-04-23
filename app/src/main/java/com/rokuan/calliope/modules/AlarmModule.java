@@ -65,8 +65,6 @@ public class AlarmModule extends CalliopeModule {
             ComplementObject compl = (ComplementObject)object.what;
 
             if(compl.object.matches(CONTENT_ALARM_REGEX)){
-                System.out.println("NEW ALARM");
-
                 switch((Action.VerbAction)object.action){
                     case CREATE_AGAIN:
                     case MAKE:
@@ -82,8 +80,6 @@ public class AlarmModule extends CalliopeModule {
                         return true;
                 }
             } else if(compl.object.matches(CONTENT_TIMER_REGEX)){
-                System.out.println("NEW TIMER");
-
                 switch((Action.VerbAction)object.action){
                     case START:
                     case ACTIVATE:

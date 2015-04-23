@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
+import android.util.Log;
 
 import org.json.JSONObject;
 
@@ -19,8 +20,8 @@ import java.util.Map;
  * Created by LEBEAU Christophe on 16/04/2015.
  */
 public class RemoteData {
-    private static final int CONNECT_TIMEOUT = 10000;
-    private static final int READ_TIMEOUT = 10000;
+    private static final int CONNECT_TIMEOUT = 20000;
+    private static final int READ_TIMEOUT = 20000;
 
     /**
      * Converts an address pointing to an image into a Bitmap
@@ -90,7 +91,8 @@ public class RemoteData {
 
             return new JSONObject(json.toString());
         } catch(Exception e) {
-            e.printStackTrace();
+            //Log.e("RemoteData", e.printStackTrace();
+            Log.e("RemoteData", e.getMessage());
             return null;
         } finally {
             if(connection != null){

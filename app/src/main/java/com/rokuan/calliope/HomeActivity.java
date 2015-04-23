@@ -34,6 +34,7 @@ import com.rokuan.calliope.modules.CalliopeModule;
 import com.rokuan.calliope.modules.GoogleMapsModule;
 import com.rokuan.calliope.modules.InterpretationModule;
 import com.rokuan.calliope.modules.MediaCaptureModule;
+import com.rokuan.calliope.modules.TVModule;
 import com.rokuan.calliope.modules.WeatherModule;
 import com.rokuan.calliope.source.ImageFileSource;
 import com.rokuan.calliope.source.SourceObject;
@@ -132,6 +133,7 @@ public class HomeActivity extends FragmentActivity
         modules.add(new MediaCaptureModule(this));
         modules.add(new AlarmModule(this));
         modules.add(new WeatherModule(this));
+        modules.add(new TVModule(this));
     }
 
     @Override

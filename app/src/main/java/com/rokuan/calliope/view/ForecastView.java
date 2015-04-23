@@ -38,11 +38,28 @@ public class ForecastView extends LinearLayout {
 
         TextView placeName = (TextView)this.findViewById(R.id.view_forecast_place);
         ListView listView = (ListView)this.findViewById(R.id.view_forecast_list);
+        SingleWeatherDataAdapter adapter = new SingleWeatherDataAdapter(this.getContext(), data.getForecast());
 
         placeName.setText(data.getCity().toString());
-        listView.setAdapter(new SingleWeatherDataAdapter(this.getContext(), data.getForecast()));
+        listView.setAdapter(adapter);
 
-        Log.i("Data count", String.valueOf(data.getForecast().size()));
+        int totalItemsHeight = 0;
+        int itemsCount = adapter.getCount();
+
+        for (int itemPos = 0; itemPos < itemsCount; itemPos++) {
+            View item = adapter.getView(itemPos, null, listView);
+            item.measure(0, 0);
+            totalItemsHeight += item.getMeasuredHeight();
+        }
+
+        // Get total height of all item dividers.
+        int totalDividersHeight = listView.getDividerHeight() * (itemsCount - 1);
+
+        // Set list height.
+        ViewGroup.LayoutParams params = listView.getLayoutParams();
+        params.height = totalItemsHeight + totalDividersHeight;
+        listView.setLayoutParams(params);
+        listView.requestLayout();
     }
 
     class SingleWeatherDataAdapter extends ArrayAdapter<ForecastData.SingleWeatherData> {
@@ -69,7 +86,7 @@ public class ForecastView extends LinearLayout {
 
             date.setText(new SimpleDateFormat("EEE dd MMMMM").format(item.getDate()));
             icon.setImageBitmap(item.getWeatherImage());
-            temperature.setText(item.getTemperature() + "°C");
+            temperature.setText(Math.round(item.getTemperature()) + "°C");
 
             return v;
         }
