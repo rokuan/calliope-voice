@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.location.Location;
 import android.util.Log;
 
+import com.loopj.android.http.RequestParams;
 import com.rokuan.calliope.R;
 import com.rokuan.calliope.utils.RemoteData;
 
@@ -43,29 +44,30 @@ public class OpenWeatherMapAPI {
         return RemoteData.getBitmapFromURL(String.format(ICON_QUERY, iconName));
     }
 
+    public static String getBitmapURL(String iconName){
+        return String.format(ICON_QUERY, iconName);
+    }
+
     /**
      * Returns the forecast for a specific city denoted by its ID for 7 days
      * @param context the android context to be used
      * @param placeId the place id
      * @return a forecast for the next 7 days or null if an error occurred
      */
-    public static ForecastData getWeekForecastForId(Context context, long placeId){
-        return getForecast(context, 7, ID_QUERY_TYPE, placeId, null, null);
+    public static String getWeekForecastForIdURL(Context context, long placeId){
+        return getForecastURL(context, 7, ID_QUERY_TYPE, placeId, null, null);
     }
 
-    public static ForecastData getWeekForecastForName(Context context, String placeName){
-        return getForecast(context, 7, NAME_QUERY_TYPE, -1, placeName, null);
+    public static String getWeekForecastForNameURL(Context context, String placeName){
+        return getForecastURL(context, 7, NAME_QUERY_TYPE, -1, placeName, null);
     }
 
-    public static ForecastData getWeekForecastForLocation(Context context, Location placeLocation){
-        return getForecast(context, 7, LOCATION_QUERY_TYPE, -1, null, placeLocation);
+    public static String getWeekForecastForLocationURL(Context context, Location placeLocation){
+        return getForecastURL(context, 7, LOCATION_QUERY_TYPE, -1, null, placeLocation);
     }
 
-    private static ForecastData getForecast(Context context, int count, int queryType, long placeId, String placeName, Location placeLocation){
-        String query = addQueryParameter(String.format(FORECAST_QUERY, count), queryType, placeId, placeName, placeLocation);
-        Log.i("Sunny", "Weather (Forecast query)" + query);
-        JSONObject json = getJSON(context, query);
-        return ForecastData.buildFromJSON(json);
+    private static String getForecastURL(Context context, int count, int queryType, long placeId, String placeName, Location placeLocation){
+        return addQueryParameter(String.format(FORECAST_QUERY, count), queryType, placeId, placeName, placeLocation);
     }
 
     /**
@@ -74,27 +76,20 @@ public class OpenWeatherMapAPI {
      * @param placeId the city id
      * @return a weather data or null if an error occurred
      */
-    public static WeatherData getWeatherForId(Context context, long placeId){
-        return getWeather(context, ID_QUERY_TYPE, placeId, null, null);
+    public static String getWeatherForIdURL(Context context, long placeId){
+        return getWeatherURL(context, ID_QUERY_TYPE, placeId, null, null);
     }
 
-    public static WeatherData getWeatherForName(Context context, String placeName){
-        return getWeather(context, NAME_QUERY_TYPE, -1, placeName, null);
+    public static String getWeatherForNameURL(Context context, String placeName){
+        return getWeatherURL(context, NAME_QUERY_TYPE, -1, placeName, null);
     }
 
-    public static WeatherData getWeatherForLocation(Context context, Location placeLocation){
-        return getWeather(context, LOCATION_QUERY_TYPE, -1, null, placeLocation);
+    public static String getWeatherForLocationURL(Context context, Location placeLocation){
+        return getWeatherURL(context, LOCATION_QUERY_TYPE, -1, null, placeLocation);
     }
 
-    private static WeatherData getWeather(Context context, int queryType, long placeId, String placeName, Location placeLocation){
-        String query = addQueryParameter(WEATHER_QUERY, queryType, placeId, placeName, placeLocation);
-        JSONObject result = getJSON(context, query);
-
-        try {
-            return WeatherData.buildFromJSON(result);
-        } catch (JSONException e) {
-            return null;
-        }
+    private static String getWeatherURL(Context context, int queryType, long placeId, String placeName, Location placeLocation){
+        return addQueryParameter(WEATHER_QUERY, queryType, placeId, placeName, placeLocation);
     }
 
     private static String addQueryParameter(String initialQuery, int queryType, long placeId, String placeName, Location placeLocation){
@@ -115,6 +110,12 @@ public class OpenWeatherMapAPI {
         }
 
         return query;
+    }
+
+    public static RequestParams getAdditionalParameters(Context context){
+        RequestParams params = new RequestParams();
+        params.put("x-api-key", getApiKey(context));
+        return params;
     }
 
     /**

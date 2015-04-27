@@ -31,7 +31,8 @@ public class ForecastData {
         private double humidity; //"humidity":95,
         private String weatherType;
         private String weatherDescription;
-        private Bitmap weatherImage;
+        //private Bitmap weatherImage;
+        private String weatherIconName;
         private double speed;
         private double degree;
         private double clouds;
@@ -64,7 +65,8 @@ public class ForecastData {
 
             info.weatherType = weather.getString("main");
             info.weatherDescription = weather.getString("description");
-            info.weatherImage = OpenWeatherMapAPI.getIcon(weather.getString("icon"));
+            //info.weatherImage = OpenWeatherMapAPI.getIcon(weather.getString("icon"));
+            info.weatherIconName = weather.getString("icon");
 
             info.speed = json.getDouble("speed");
             info.degree = json.getDouble("deg");
@@ -95,8 +97,12 @@ public class ForecastData {
             return weatherDescription;
         }
 
-        public Bitmap getWeatherImage() {
+        /*public Bitmap getWeatherImage() {
             return weatherImage;
+        }*/
+
+        public String getWeatherIconName(){
+            return weatherIconName;
         }
 
         public double getSpeed() {
@@ -139,34 +145,29 @@ public class ForecastData {
         return forecast;
     }
 
-    public static ForecastData buildFromJSON(JSONObject json){
-        try {
-            ForecastData data = new ForecastData();
-            int resultsSize = json.getInt("cnt");
-            JSONArray elements = json.getJSONArray("list");
+    public static ForecastData buildFromJSON(JSONObject json) throws JSONException {
+        ForecastData data = new ForecastData();
+        int resultsSize = json.getInt("cnt");
+        JSONArray elements = json.getJSONArray("list");
 
-            JSONObject cityObject = json.getJSONObject("city");
-            long cityId = cityObject.getLong("id");
-            String cityName = cityObject.getString("name");
-            String cityCountry = cityObject.getString("country");
+        JSONObject cityObject = json.getJSONObject("city");
+        long cityId = cityObject.getLong("id");
+        String cityName = cityObject.getString("name");
+        String cityCountry = cityObject.getString("country");
 
-            data.city = new City(cityId, cityName, cityCountry);
+        data.city = new City(cityId, cityName, cityCountry);
 
-            // TODO: verifier que cnt == count ?
-            //if(elements.length() > 0) {
-            if(resultsSize > 0){
-                data.forecast = new ArrayList<SingleWeatherData>(resultsSize);
+        // TODO: verifier que cnt == count ?
+        //if(elements.length() > 0) {
+        if(resultsSize > 0){
+            data.forecast = new ArrayList<SingleWeatherData>(resultsSize);
 
-                for (int i=0; i<resultsSize; i++) {
-                    JSONObject item = elements.getJSONObject(i);
-                    data.forecast.add(SingleWeatherData.buildFromJSON(item));
-                }
+            for (int i=0; i<resultsSize; i++) {
+                JSONObject item = elements.getJSONObject(i);
+                data.forecast.add(SingleWeatherData.buildFromJSON(item));
             }
-
-            return data;
-        } catch (JSONException e) {
-            // TODO: erreur
-            return null;
         }
+
+        return data;
     }
 }

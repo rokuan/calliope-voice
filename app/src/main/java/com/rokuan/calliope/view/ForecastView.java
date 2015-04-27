@@ -13,6 +13,8 @@ import android.widget.TextView;
 
 import com.rokuan.calliope.R;
 import com.rokuan.calliope.api.openweather.ForecastData;
+import com.rokuan.calliope.api.openweather.OpenWeatherMapAPI;
+import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -85,7 +87,8 @@ public class ForecastView extends LinearLayout {
             TextView temperature = (TextView)v.findViewById(R.id.view_forecast_item_temperature);
 
             date.setText(new SimpleDateFormat("EEE dd MMMMM").format(item.getDate()));
-            icon.setImageBitmap(item.getWeatherImage());
+            //icon.setImageBitmap(item.getWeatherImage());
+            Picasso.with(this.getContext()).load(OpenWeatherMapAPI.getBitmapURL(item.getWeatherIconName())).into(icon);
             temperature.setText(Math.round(item.getTemperature()) + "°C");
 
             return v;

@@ -4,9 +4,12 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.Log;
 
+import com.squareup.picasso.Picasso;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.Date;
 
 /**
@@ -21,7 +24,8 @@ public class WeatherData {
     private Date date;
     private Date sunrise;
     private Date sunset;
-    private Bitmap weatherImage;
+    //private Bitmap weatherImage;
+    private String weatherIconName;
     private String weatherDescription;
 
     /**
@@ -37,7 +41,7 @@ public class WeatherData {
      * @return a new WeatherData instance with filled attributes
      * @throws JSONException
      */
-    public static WeatherData buildFromJSON(JSONObject json) throws JSONException {
+    public static WeatherData buildFromJSON(Context context, JSONObject json) throws JSONException {
         WeatherData info = new WeatherData();
 
         JSONObject main = json.getJSONObject("main");
@@ -58,7 +62,13 @@ public class WeatherData {
         info.speed = json.getJSONObject("wind").getInt("speed");
 
         info.weatherDescription = weather.getString("description");
-        info.weatherImage = OpenWeatherMapAPI.getIcon(weather.getString("icon"));
+        //info.weatherImage = OpenWeatherMapAPI.getIcon(weather.getString("icon"));
+        info.weatherIconName = weather.getString("icon");
+        /*try {
+            info.weatherImage = Picasso.with(context).load(OpenWeatherMapAPI.getBitmapURL(weather.getString("icon"))).get();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }*/
 
         info.sunrise = new Date(sys.getLong("sunrise") * 1000);
         info.sunset = new Date(sys.getLong("sunset") * 1000);
@@ -91,8 +101,12 @@ public class WeatherData {
         return sunset;
     }
 
-    public Bitmap getWeatherImage() {
+    /*public Bitmap getWeatherImage() {
         return weatherImage;
+    }*/
+
+    public String getIcon(){
+        return weatherIconName;
     }
 
     public String getWeatherDescription() {

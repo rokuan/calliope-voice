@@ -7,10 +7,16 @@
     <LinearLayout
         android:id="@+id/message_item_placeholder"
         android:background="@drawable/message_background"
-        android:gravity="center"
         android:layout_margin="5dp"
         android:padding="10dp"
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"></LinearLayout>
+        android:layout_height="wrap_content">
+
+        <View
+            android:background="@color/main_color"
+            android:layout_width="5dp"
+            android:layout_height="match_parent"
+            android:layout_marginRight="10dp" />
+    </LinearLayout>
 </LinearLayout>

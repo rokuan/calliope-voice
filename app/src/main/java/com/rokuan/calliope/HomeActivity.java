@@ -48,6 +48,9 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+
 /**
  * Created by LEBEAU Christophe on 24/03/2015.
  */
@@ -64,16 +67,15 @@ public class HomeActivity extends FragmentActivity
 
     private SpeechRecognizer speech;
     private CalliopeSQLiteOpenHelper db;
-    //private TextView messageBox;
-    private EditText messageBox;
-    private ImageButton submitText;
     private Intent recognizerIntent;
-
-    private ListView contentListView;
     private ViewAdapter viewAdapter;
 
     private List<InterpretationModule> modules = new ArrayList<InterpretationModule>();
     private LinkedList<SourceObject> sources = new LinkedList<>();
+
+    @InjectView(R.id.compose_message) protected EditText messageBox;
+    @InjectView(R.id.submit_message) protected ImageButton submitText;
+    @InjectView(R.id.messages_list) protected ListView contentListView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -93,11 +95,8 @@ public class HomeActivity extends FragmentActivity
         recognizerIntent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1);
         //recognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_PREFERENCE, "fr");
 
+        ButterKnife.inject(this);
 
-        //messageBox = (TextView)findViewById(R.id.calliope_message);
-        messageBox = (EditText)findViewById(R.id.compose_message);
-        submitText = (ImageButton)findViewById(R.id.submit_message);
-        contentListView = (ListView)findViewById(R.id.messages_list);
         viewAdapter = new ViewAdapter(this, new ArrayList<View>());
         viewAdapter.setNotifyOnChange(true);
         contentListView.setAdapter(viewAdapter);
@@ -415,7 +414,6 @@ public class HomeActivity extends FragmentActivity
     public void onConnected(Bundle connectionHint) {
         clientConnected = true;
         mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-        Log.i("onConnected", "connected");
         startLocationUpdates();
     }
 

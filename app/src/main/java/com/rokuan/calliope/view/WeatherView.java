@@ -7,7 +7,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.rokuan.calliope.R;
+import com.rokuan.calliope.api.openweather.OpenWeatherMapAPI;
 import com.rokuan.calliope.api.openweather.WeatherData;
+import com.squareup.picasso.Picasso;
 
 /**
  * Created by LEBEAU Christophe on 16/04/2015.
@@ -33,7 +35,8 @@ public class WeatherView extends LinearLayout {
         TextView temperature = (TextView)this.findViewById(R.id.view_weather_temperature);
 
         placeName.setText(data.getPlace().toString());
-        weatherImage.setImageBitmap(data.getWeatherImage());
+        //weatherImage.setImageBitmap(data.getWeatherImage());
+        Picasso.with(this.getContext()).load(OpenWeatherMapAPI.getBitmapURL(data.getIcon())).into(weatherImage);
         temperature.setText(Math.round(data.getTemperature()) + "°C");
         // TODO: ajouter les autres champs
     }

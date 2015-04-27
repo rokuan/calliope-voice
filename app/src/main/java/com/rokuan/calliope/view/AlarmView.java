@@ -12,11 +12,16 @@ import com.rokuan.calliope.R;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+
 /**
  * Created by LEBEAU Christophe on 13/04/2015.
  */
 public class AlarmView extends LinearLayout {
     private Date time;
+
+    @InjectView(R.id.view_alarm_time) protected TextView timeView;
 
     public AlarmView(Context context, Date alarmTime) {
         super(context);
@@ -26,12 +31,11 @@ public class AlarmView extends LinearLayout {
 
     private void initAlarmView(){
         this.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-
         LayoutInflater inflater = (LayoutInflater)this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
         inflater.inflate(R.layout.view_alarm, this);
 
-        TextView timeView = (TextView)this.findViewById(R.id.view_alarm_time);
+        ButterKnife.inject(this);
+
         timeView.setText(new SimpleDateFormat("HH:mm").format(time));
     }
 }

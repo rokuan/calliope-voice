@@ -14,10 +14,12 @@ public class TVProgram {
     private int channelId;
     private int channelNumber;
     private String channelName;
-    private Bitmap channelLogo;
+    //private Bitmap channelLogo;
+    private String channelLogo;
     private String time;
     private String title;
-    private Bitmap image;
+    //private Bitmap image;
+    private String image;
 
     public static TVProgram buildFromJSON(JSONObject json) throws JSONException {
         TVProgram program = new TVProgram();
@@ -25,10 +27,12 @@ public class TVProgram {
         program.channelId = json.getInt("channel_id");
         program.channelNumber = json.getInt("channel_number");
         program.channelName = json.getString("channel");
-        program.channelLogo = RemoteData.getBitmapFromURL(json.getString("logo"));
+        //program.channelLogo = RemoteData.getBitmapFromURL(json.getString("logo"));
+        program.channelLogo = json.getString("logo");
         program.title = json.getString("title");
         program.time = json.getString("time");
-        program.image = RemoteData.getBitmapFromURL(json.getString("image"));
+        //program.image = RemoteData.getBitmapFromURL(json.getString("image"));
+        program.image = json.getString("image");
 
         return program;
     }
@@ -45,7 +49,11 @@ public class TVProgram {
         return channelName;
     }
 
-    public Bitmap getChannelLogo() {
+    /*public Bitmap getChannelLogo() {
+        return channelLogo;
+    }*/
+
+    public String getChannelLogoURL(){
         return channelLogo;
     }
 
@@ -57,7 +65,11 @@ public class TVProgram {
         return title;
     }
 
-    public Bitmap getImage() {
+    /*public Bitmap getImage() {
+        return image;
+    }*/
+
+    public String getImageURL(){
         return image;
     }
 }

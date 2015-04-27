@@ -16,6 +16,9 @@ import com.rokuan.calliope.R;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+
 /**
  * Created by LEBEAU Christophe on 25/03/2015.
  */
@@ -23,12 +26,13 @@ public class AudioFileView extends LinearLayout {
     public static final SimpleDateFormat timeFormat = new SimpleDateFormat("");
 
     private Uri audioUri;
-    private ImageButton playPauseButton;
-    private ImageButton stopButton;
-    private SeekBar progress;
-    private TextView durationTextView;
     //private MediaController player;
     private MediaPlayer player;
+
+    @InjectView(R.id.view_audio_play_pause) protected ImageButton playPauseButton;
+    @InjectView(R.id.view_audio_stop) protected ImageButton stopButton;
+    @InjectView(R.id.view_audio_progress) protected SeekBar progress;
+    @InjectView(R.id.view_audio_time) protected TextView durationTextView;
 
     public AudioFileView(Context context, Uri u) {
         super(context);
@@ -38,13 +42,11 @@ public class AudioFileView extends LinearLayout {
 
     private void initAudioFileView(){
         LayoutInflater inflater = (LayoutInflater)this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
         inflater.inflate(R.layout.view_audio, this);
 
-        playPauseButton = (ImageButton)findViewById(R.id.view_audio_play_pause);
-        stopButton = (ImageButton)findViewById(R.id.view_audio_stop);
-        progress = (SeekBar)findViewById(R.id.view_audio_progress);
-        durationTextView = (TextView)findViewById(R.id.view_audio_time);
+        ButterKnife.inject(this);
+
+        player = new MediaPlayer();
 
         try {
             player.setDataSource(this.getContext(), audioUri);

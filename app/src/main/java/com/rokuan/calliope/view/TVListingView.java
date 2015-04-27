@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import com.rokuan.calliope.R;
 import com.rokuan.calliope.api.kimonotv.TVProgram;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -158,8 +159,10 @@ public class TVListingView extends LinearLayout {
 
             programName.setText(program.getTitle());
             programTime.setText(program.getTime());
-            programImage.setImageBitmap(program.getImage());
-            channelLogo.setImageBitmap(program.getChannelLogo());
+            //programImage.setImageBitmap(program.getImage());
+            Picasso.with(this.getContext()).load(program.getImageURL()).into(programImage);
+            Picasso.with(this.getContext()).load(program.getChannelLogoURL()).into(channelLogo);
+            //channelLogo.setImageBitmap(program.getChannelLogo());
 
             return v;
         }
