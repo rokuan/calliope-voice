@@ -16,17 +16,21 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.nineoldandroids.animation.Animator;
 import com.rokuan.calliope.constants.RequestCode;
 import com.rokuan.calliope.db.CalliopeSQLiteOpenHelper;
 import com.rokuan.calliope.modules.AlarmModule;
@@ -50,6 +54,7 @@ import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import butterknife.InjectViews;
 
 /**
  * Created by LEBEAU Christophe on 24/03/2015.
@@ -73,9 +78,23 @@ public class HomeActivity extends FragmentActivity
     private List<InterpretationModule> modules = new ArrayList<InterpretationModule>();
     private LinkedList<SourceObject> sources = new LinkedList<>();
 
+    private boolean freeSpeechModeActivated = false;
+
+    public static final int SPEECH = 0;
+    public static final int TEXT = 1;
+    public static final int PROGRESS = 2;
+
+    @InjectViews({ R.id.speech_frame, R.id.text_frame, R.id.progress_frame }) List<View> frames;
     @InjectView(R.id.compose_message) protected EditText messageBox;
     @InjectView(R.id.submit_message) protected ImageButton submitText;
     @InjectView(R.id.messages_list) protected ListView contentListView;
+
+    public static final ButterKnife.Action<View> HIDE = new ButterKnife.Action<View>() {
+        @Override
+        public void apply(View view, int index) {
+            view.setVisibility(View.INVISIBLE);
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -96,6 +115,8 @@ public class HomeActivity extends FragmentActivity
         //recognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_PREFERENCE, "fr");
 
         ButterKnife.inject(this);
+        ButterKnife.apply(frames, HIDE);
+        frames.get(SPEECH).setVisibility(View.VISIBLE);
 
         viewAdapter = new ViewAdapter(this, new ArrayList<View>());
         viewAdapter.setNotifyOnChange(true);
@@ -258,7 +279,8 @@ public class HomeActivity extends FragmentActivity
         try{
             //startInterpretationProcess(data.get(0));
             //messageBox.setText(data.get(0));
-            updateMessageText(data.get(0));
+            //updateMessageText(data.get(0));
+            checkSpeechInterpretation(data.get(0));
         }catch(Exception e){
 
         }
@@ -274,11 +296,51 @@ public class HomeActivity extends FragmentActivity
 
     }
 
-    private void updateMessageText(String text){
+    private void checkSpeechInterpretation(String text){
         /*String rightPart = text.length() > 1 ? text.substring(1) : "";
         //messageBox.setText(Character.toUpperCase(text.charAt(0)) + rightPart);
         messageBox.setText(Character.toUpperCase(text.charAt(0)) + rightPart);*/
-        messageBox.setText(text);
+        if(freeSpeechModeActivated) {
+            startInterpretationProcess(text);
+        } else {
+            messageBox.setText(text);
+            showMessageBox();
+        }
+    }
+
+    private void showMessageBox(){
+        frames.get(SPEECH).setVisibility(View.INVISIBLE);
+        frames.get(TEXT).setVisibility(View.VISIBLE);
+        YoYo.with(Techniques.SlideInRight).duration(500).playOn(frames.get(TEXT));
+    }
+
+    private void hideMessageBoxAndExecute(String text){
+        final String message = text;
+
+        YoYo.with(Techniques.SlideOutLeft).duration(500).withListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                frames.get(TEXT).setVisibility(View.INVISIBLE);
+                frames.get(SPEECH).setVisibility(View.VISIBLE);
+                addMessage(message);
+                startInterpretationProcess(message);
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+
+            }
+        }).playOn(frames.get(TEXT));
     }
 
     public void startInterpretationProcess(String text){
@@ -373,8 +435,9 @@ public class HomeActivity extends FragmentActivity
             case R.id.submit_message:
                 String text = messageBox.getText().toString();
                 messageBox.setText("");
-                addMessage(text);
-                startInterpretationProcess(text);
+                hideMessageBoxAndExecute(text);
+                /*addMessage(text);
+                startInterpretationProcess(text);*/
                 break;
         }
     }
@@ -392,10 +455,14 @@ public class HomeActivity extends FragmentActivity
 
     public void startProcess(){
         // TODO:
+        ButterKnife.apply(frames, HIDE);
+        frames.get(PROGRESS).setVisibility(View.VISIBLE);
     }
 
     public void endProcess(){
         // TODO:
+        ButterKnife.apply(frames, HIDE);
+        frames.get(SPEECH).setVisibility(View.VISIBLE);
     }
 
     public void insertView(View w){
