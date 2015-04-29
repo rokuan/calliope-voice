@@ -11,7 +11,16 @@ public abstract class SourceObject {
         IMAGE,
         AUDIO,
         VIDEO,
-        LINK
+        LINK,
+        ALARM,
+        WEATHER,
+        FORECAST,
+        TV_LISTING,
+        PERSON,
+        WORD,
+        EVENT,
+        SMS,
+        MAIL
     }
 
     private Context context;

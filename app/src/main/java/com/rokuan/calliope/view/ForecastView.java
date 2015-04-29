@@ -23,7 +23,6 @@ import java.util.List;
  * Created by LEBEAU Christophe on 16/04/2015.
  */
 public class ForecastView extends LinearLayout {
-
     private ForecastData data;
 
     public ForecastView(Context context, ForecastData fData) {

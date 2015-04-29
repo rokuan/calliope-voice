@@ -6,6 +6,7 @@ import android.provider.AlarmClock;
 import android.util.Log;
 
 import com.rokuan.calliope.HomeActivity;
+import com.rokuan.calliope.source.AlarmSource;
 import com.rokuan.calliope.view.AlarmView;
 import com.rokuan.calliopecore.sentence.Action;
 import com.rokuan.calliopecore.sentence.structure.ComplementObject;
@@ -151,8 +152,9 @@ public class AlarmModule extends CalliopeModule {
         if (intent.resolveActivity(this.getActivity().getPackageManager()) != null) {
             this.getActivity().startActivity(intent);
 
-            AlarmView aView = new AlarmView(this.getActivity(), time);
-            this.getActivity().insertView(aView);
+            /*AlarmView aView = new AlarmView(this.getActivity(), time);
+            this.getActivity().insertView(aView);*/
+            this.getActivity().addSource(new AlarmSource(time));
         }
     }
 

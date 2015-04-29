@@ -15,6 +15,8 @@ import com.rokuan.calliope.api.openweather.ForecastDataResultCallback;
 import com.rokuan.calliope.api.openweather.OpenWeatherMapAPI;
 import com.rokuan.calliope.api.openweather.WeatherData;
 import com.rokuan.calliope.api.openweather.WeatherDataResultCallback;
+import com.rokuan.calliope.source.ForecastSource;
+import com.rokuan.calliope.source.WeatherSource;
 import com.rokuan.calliope.utils.Connectivity;
 import com.rokuan.calliope.utils.RemoteData;
 import com.rokuan.calliope.view.ForecastView;
@@ -134,7 +136,8 @@ public class WeatherModule extends CalliopeModule implements WeatherDataResultCa
     public void onWeatherDataResult(boolean success, WeatherData result) {
         if(success){
             Log.i("WeatherModule", "onWeatherDataResult");
-            this.getActivity().insertView(new WeatherView(this.getActivity(), result));
+            //this.getActivity().insertView(new WeatherView(this.getActivity(), result));
+            this.getActivity().addSource(new WeatherSource(result));
         } else {
             // TODO:
         }
@@ -184,7 +187,8 @@ public class WeatherModule extends CalliopeModule implements WeatherDataResultCa
     @Override
     public void onForecastDataResult(boolean success, ForecastData result) {
         if(success){
-            this.getActivity().insertView(new ForecastView(this.getActivity(), result));
+            //this.getActivity().insertView(new ForecastView(this.getActivity(), result));
+            this.getActivity().addSource(new ForecastSource(result));
         } else {
             // TODO:
         }

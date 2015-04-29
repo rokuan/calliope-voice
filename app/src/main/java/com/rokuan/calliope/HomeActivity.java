@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
@@ -30,6 +31,12 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.nhaarman.listviewanimations.appearance.AnimationAdapter;
+import com.nhaarman.listviewanimations.appearance.simple.AlphaInAnimationAdapter;
+import com.nhaarman.listviewanimations.appearance.simple.SwingBottomInAnimationAdapter;
+import com.nhaarman.listviewanimations.itemmanipulation.DynamicListView;
+import com.nhaarman.listviewanimations.itemmanipulation.animateaddition.AnimateAdditionAdapter;
+import com.nhaarman.listviewanimations.util.Insertable;
 import com.nineoldandroids.animation.Animator;
 import com.rokuan.calliope.constants.RequestCode;
 import com.rokuan.calliope.db.CalliopeSQLiteOpenHelper;
@@ -40,15 +47,26 @@ import com.rokuan.calliope.modules.InterpretationModule;
 import com.rokuan.calliope.modules.MediaCaptureModule;
 import com.rokuan.calliope.modules.TVModule;
 import com.rokuan.calliope.modules.WeatherModule;
+import com.rokuan.calliope.source.AlarmSource;
+import com.rokuan.calliope.source.AudioFileSource;
+import com.rokuan.calliope.source.ForecastSource;
 import com.rokuan.calliope.source.ImageFileSource;
 import com.rokuan.calliope.source.SourceObject;
+import com.rokuan.calliope.source.TVListingsSource;
 import com.rokuan.calliope.source.TextSource;
 import com.rokuan.calliope.source.VideoFileSource;
+import com.rokuan.calliope.source.WeatherSource;
+import com.rokuan.calliope.view.AlarmView;
+import com.rokuan.calliope.view.AudioFileView;
+import com.rokuan.calliope.view.ForecastView;
 import com.rokuan.calliope.view.PictureFileView;
+import com.rokuan.calliope.view.TVListingView;
 import com.rokuan.calliope.view.VideoFileView;
+import com.rokuan.calliope.view.WeatherView;
 import com.rokuan.calliopecore.sentence.structure.InterpretationObject;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -73,7 +91,7 @@ public class HomeActivity extends FragmentActivity
     private SpeechRecognizer speech;
     private CalliopeSQLiteOpenHelper db;
     private Intent recognizerIntent;
-    private ViewAdapter viewAdapter;
+    private SourceAdapter sourceAdapter;
 
     private List<InterpretationModule> modules = new ArrayList<InterpretationModule>();
     private LinkedList<SourceObject> sources = new LinkedList<>();
@@ -87,7 +105,7 @@ public class HomeActivity extends FragmentActivity
     @InjectViews({ R.id.speech_frame, R.id.text_frame, R.id.progress_frame }) List<View> frames;
     @InjectView(R.id.compose_message) protected EditText messageBox;
     @InjectView(R.id.submit_message) protected ImageButton submitText;
-    @InjectView(R.id.messages_list) protected ListView contentListView;
+    @InjectView(R.id.messages_list) protected DynamicListView contentListView;
 
     public static final ButterKnife.Action<View> HIDE = new ButterKnife.Action<View>() {
         @Override
@@ -118,9 +136,15 @@ public class HomeActivity extends FragmentActivity
         ButterKnife.apply(frames, HIDE);
         frames.get(SPEECH).setVisibility(View.VISIBLE);
 
-        viewAdapter = new ViewAdapter(this, new ArrayList<View>());
-        viewAdapter.setNotifyOnChange(true);
-        contentListView.setAdapter(viewAdapter);
+        sourceAdapter = new SourceAdapter(this, sources);
+        sourceAdapter.setNotifyOnChange(true);
+        contentListView.disableDragAndDrop();
+        contentListView.disableSwipeToDismiss();
+        SwingBottomInAnimationAdapter animAdapter = new SwingBottomInAnimationAdapter(sourceAdapter);
+        animAdapter.setAbsListView(contentListView);
+        assert animAdapter.getViewAnimator() != null;
+        animAdapter.getViewAnimator().setInitialDelayMillis(100);
+        contentListView.setAdapter(animAdapter);
 
         findViewById(R.id.speech_activate).setOnTouchListener(this);
         findViewById(R.id.import_image).setOnClickListener(this);
@@ -142,10 +166,6 @@ public class HomeActivity extends FragmentActivity
                 submitText.setEnabled(!messageBox.getText().toString().isEmpty());
             }
         });
-
-        //buildGoogleApiClient();
-        //createLocationRequest();
-        //startLocationUpdates();
     }
 
     private void addModules(){
@@ -396,30 +416,21 @@ public class HomeActivity extends FragmentActivity
 
     private void addImage(Uri pictureUri){
         ImageFileSource image = new ImageFileSource(this, pictureUri);
-        PictureFileView v = new PictureFileView(this, pictureUri);
-
-        //image.getTextAsync(this);
-
-        sources.add(image);
-        viewAdapter.add(v);
+        addSource(image);
     }
 
     private void addMessage(String text){
         TextSource textSrc = new TextSource(text);
-        TextView textView = new TextView(this);
-
-        textView.setText(text);
-
-        sources.add(textSrc);
-        viewAdapter.add(textView);
+        addSource(textSrc);
     }
 
     private void addVideo(Uri videoUri){
         VideoFileSource video = new VideoFileSource(videoUri);
-        VideoFileView v = new VideoFileView(this, videoUri);
+        addSource(video);
+    }
 
-        sources.add(video);
-        viewAdapter.add(v);
+    public void addSource(SourceObject src){
+        contentListView.insert(sourceAdapter.getCount(), src);
     }
 
     @Override
@@ -442,17 +453,6 @@ public class HomeActivity extends FragmentActivity
         }
     }
 
-    /*@Override
-    public void onExtractionStarted(String message) {
-        Log.i("TextExtraction", "Extraction started");
-    }
-
-    @Override
-    public void onExtractionEnded(String value) {
-        Log.i("TextExtraction", "Extraction ended with walue '" + value + "'");
-        Toast.makeText(this, value, Toast.LENGTH_LONG).show();
-    }*/
-
     public void startProcess(){
         // TODO:
         ButterKnife.apply(frames, HIDE);
@@ -465,9 +465,10 @@ public class HomeActivity extends FragmentActivity
         frames.get(SPEECH).setVisibility(View.VISIBLE);
     }
 
-    public void insertView(View w){
-        viewAdapter.add(w);
-    }
+    /*public void insertView(View v){
+        //viewAdapter.add(v);
+        contentListView.insert(sourceAdapter.getCount(), v);
+    }*/
 
     public void setFreeSpeechEnabled(boolean enabled){
 
@@ -499,32 +500,84 @@ public class HomeActivity extends FragmentActivity
         mCurrentLocation = location;
     }
 
-    class ViewAdapter extends ArrayAdapter<View> {
+    class SourceAdapter extends ArrayAdapter<SourceObject> implements Insertable<SourceObject> {
         private LayoutInflater inflater;
 
-        public ViewAdapter(Context context, List<View> objects) {
+        public SourceAdapter(Context context, List<SourceObject> objects) {
             super(context, R.layout.fragment_main, objects);
             inflater = (LayoutInflater)context.getSystemService(LAYOUT_INFLATER_SERVICE);
         }
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent){
-            return this.getItem(position);
-            /*View mainView = inflater.inflate(R.layout.message_item, parent, false);
-            ViewGroup layout = (ViewGroup)mainView.findViewById(R.id.message_item_placeholder);
+            SourceObject.ObjectType type = SourceObject.ObjectType.values()[this.getItemViewType(position)];
+            SourceObject item = this.getItem(position);
 
-            layout.removeAllViews();
-            layout.addView(this.getItem(position));
+            View mainView = convertView;
 
-            return mainView;*/
+            if(convertView == null){
+                mainView = inflater.inflate(R.layout.message_item, parent, false);
+            }
+
+            ViewGroup placeHolder = (ViewGroup)mainView.findViewById(R.id.message_item_placeholder);
+            View itemView;
+
+            placeHolder.removeAllViews();
+
+            switch(type){
+                case ALARM:
+                    itemView = new AlarmView(this.getContext(), ((AlarmSource)item).getTime());
+                    break;
+                case TEXT:
+                    TextView textView = new TextView(this.getContext());
+                    textView.setText(((TextSource)item).getText());
+                    itemView = textView;
+                    break;
+                case IMAGE:
+                    itemView = new PictureFileView(this.getContext(), ((ImageFileSource)item).getFileUri());
+                    break;
+                case VIDEO:
+                    itemView = new VideoFileView(this.getContext(), ((VideoFileSource)item).getFileUri());
+                    break;
+                case AUDIO:
+                    itemView = new AudioFileView(this.getContext(), ((AudioFileSource)item).getFileUri());
+                    break;
+                case WEATHER:
+                    itemView = new WeatherView(this.getContext(), ((WeatherSource)item).getWeatherData());
+                    break;
+                case FORECAST:
+                    itemView = new ForecastView(this.getContext(), ((ForecastSource)item).getForecastData());
+                    break;
+                case TV_LISTING:
+                    itemView = new TVListingView(this.getContext(), ((TVListingsSource)item).getProgramList());
+                    break;
+                case LINK:
+                case PERSON:
+                case WORD:
+                case EVENT:
+                case SMS:
+                case MAIL:
+                default:
+                    return null;
+            }
+
+            placeHolder.addView(itemView);
+            return mainView;
         }
 
         @Override
-        public void add(View v){
-            View mainView = inflater.inflate(R.layout.message_item, null);
-            ViewGroup layout = (ViewGroup)mainView.findViewById(R.id.message_item_placeholder);
-            layout.addView(v);
-            super.add(mainView);
+        public int getViewTypeCount(){
+            return SourceObject.ObjectType.values().length;
+        }
+
+        @Override
+        public int getItemViewType(int position){
+            return this.getItem(position).getType().ordinal();
+        }
+
+        @Override
+        public void add(int i, SourceObject src) {
+            this.add(src);
         }
     }
 }

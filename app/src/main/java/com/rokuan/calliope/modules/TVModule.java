@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import com.rokuan.calliope.HomeActivity;
 import com.rokuan.calliope.api.kimonotv.KimonoTVAPI;
 import com.rokuan.calliope.api.kimonotv.TVProgram;
+import com.rokuan.calliope.source.TVListingsSource;
 import com.rokuan.calliope.utils.Connectivity;
 import com.rokuan.calliope.view.TVListingView;
 import com.rokuan.calliopecore.sentence.Action;
@@ -46,7 +47,8 @@ public class TVModule extends CalliopeModule {
             if(results == null){
                 // TODO:
             } else {
-                act.insertView(new TVListingView(act, results));
+                //act.insertView(new TVListingView(act, results));
+                act.addSource(new TVListingsSource(results));
             }
 
             act.endProcess();
