@@ -45,6 +45,7 @@ import com.rokuan.calliope.modules.CalliopeModule;
 import com.rokuan.calliope.modules.GoogleMapsModule;
 import com.rokuan.calliope.modules.InterpretationModule;
 import com.rokuan.calliope.modules.MediaCaptureModule;
+import com.rokuan.calliope.modules.SearchModule;
 import com.rokuan.calliope.modules.TVModule;
 import com.rokuan.calliope.modules.WeatherModule;
 import com.rokuan.calliope.source.AlarmSource;
@@ -174,6 +175,7 @@ public class HomeActivity extends FragmentActivity
         modules.add(new AlarmModule(this));
         modules.add(new WeatherModule(this));
         modules.add(new TVModule(this));
+        modules.add(new SearchModule(this));
     }
 
     @Override
@@ -464,11 +466,6 @@ public class HomeActivity extends FragmentActivity
         ButterKnife.apply(frames, HIDE);
         frames.get(SPEECH).setVisibility(View.VISIBLE);
     }
-
-    /*public void insertView(View v){
-        //viewAdapter.add(v);
-        contentListView.insert(sourceAdapter.getCount(), v);
-    }*/
 
     public void setFreeSpeechEnabled(boolean enabled){
 
