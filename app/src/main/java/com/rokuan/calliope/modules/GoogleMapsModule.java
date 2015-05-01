@@ -77,6 +77,8 @@ public class GoogleMapsModule extends CalliopeModule {
 
                 return false;
             }
+
+
         } else if(object.getType() == InterpretationObject.RequestType.ORDER) {
             switch ((Action.VerbAction) object.action) {
                 case DISPLAY_SHOW:
