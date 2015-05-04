@@ -11,9 +11,14 @@
         android:text="Paris,FR"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
+    <View
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:background="@color/main_color"
+        android:layout_width="match_parent"
+        android:layout_height="1dp" />
     <ListView
         android:id="@+id/view_forecast_list"
-        android:divider="@null"
         android:scrollbars="none"
         android:layout_width="match_parent"
         android:layout_height="match_parent">

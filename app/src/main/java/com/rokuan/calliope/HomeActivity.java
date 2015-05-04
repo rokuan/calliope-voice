@@ -19,10 +19,12 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
@@ -46,6 +48,7 @@ import com.rokuan.calliope.modules.GoogleMapsModule;
 import com.rokuan.calliope.modules.InterpretationModule;
 import com.rokuan.calliope.modules.MediaCaptureModule;
 import com.rokuan.calliope.modules.SearchModule;
+import com.rokuan.calliope.modules.SystemModule;
 import com.rokuan.calliope.modules.TVModule;
 import com.rokuan.calliope.modules.WeatherModule;
 import com.rokuan.calliope.source.AlarmSource;
@@ -74,12 +77,15 @@ import java.util.List;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.InjectViews;
+import butterknife.OnClick;
 
 /**
  * Created by LEBEAU Christophe on 24/03/2015.
  */
 public class HomeActivity extends FragmentActivity
-        implements View.OnTouchListener, RecognitionListener, View.OnClickListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
+        implements View.OnTouchListener, RecognitionListener
+        //, View.OnClickListener
+        , GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener, CompoundButton.OnCheckedChangeListener {
     private GoogleApiClient mGoogleApiClient;
     private Location mCurrentLocation;
     private LocationRequest mLocationRequest;
@@ -89,23 +95,30 @@ public class HomeActivity extends FragmentActivity
     //private static final String REQUESTING_LOCATION_UPDATES_KEY = "location_update_request";
     private static final String LOCATION_KEY = "location";
 
+    public static final int SPEECH = 0;
+    public static final int TEXT = 1;
+    public static final int PROGRESS = 2;
+
+    private static final int MESSAGEBOX_ANIMATION_DURATION = 500;
+
     private SpeechRecognizer speech;
     private CalliopeSQLiteOpenHelper db;
     private Intent recognizerIntent;
     private SourceAdapter sourceAdapter;
 
+    private YoYo.AnimationComposer showMessageLayoutAnimation;
+    private YoYo.AnimationComposer hideMessageLayoutAnimation;
+
     private List<InterpretationModule> modules = new ArrayList<InterpretationModule>();
     private LinkedList<SourceObject> sources = new LinkedList<>();
 
-    private boolean freeSpeechModeActivated = false;
-
-    public static final int SPEECH = 0;
-    public static final int TEXT = 1;
-    public static final int PROGRESS = 2;
+    private boolean freeSpeechModeActivated = true;
 
     @InjectViews({ R.id.speech_frame, R.id.text_frame, R.id.progress_frame }) List<View> frames;
     @InjectView(R.id.compose_message) protected EditText messageBox;
     @InjectView(R.id.submit_message) protected ImageButton submitText;
+    @InjectView(R.id.cancel_message) protected ImageButton cancelText;
+    @InjectView(R.id.import_image) protected ImageButton importImage;
     @InjectView(R.id.messages_list) protected DynamicListView contentListView;
 
     public static final ButterKnife.Action<View> HIDE = new ButterKnife.Action<View>() {
@@ -148,25 +161,25 @@ public class HomeActivity extends FragmentActivity
         contentListView.setAdapter(animAdapter);
 
         findViewById(R.id.speech_activate).setOnTouchListener(this);
-        findViewById(R.id.import_image).setOnClickListener(this);
-        submitText.setOnClickListener(this);
+        ToggleButton speechModeToggle = (ToggleButton)findViewById(R.id.speech_mode);
+        speechModeToggle.setOnCheckedChangeListener(this);
+        speechModeToggle.setChecked(freeSpeechModeActivated);
         submitText.setEnabled(false);
         messageBox.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
 
             @Override
             public void afterTextChanged(Editable s) {
                 submitText.setEnabled(!messageBox.getText().toString().isEmpty());
             }
         });
+
+        hideMessageLayoutAnimation = YoYo.with(Techniques.SlideOutLeft).duration(MESSAGEBOX_ANIMATION_DURATION);
+        showMessageLayoutAnimation = YoYo.with(Techniques.SlideInRight).duration(MESSAGEBOX_ANIMATION_DURATION);
     }
 
     private void addModules(){
@@ -176,6 +189,7 @@ public class HomeActivity extends FragmentActivity
         modules.add(new WeatherModule(this));
         modules.add(new TVModule(this));
         modules.add(new SearchModule(this));
+        modules.add(new SystemModule(this));
     }
 
     @Override
@@ -244,6 +258,27 @@ public class HomeActivity extends FragmentActivity
     @Override
     public void onBackPressed(){
         this.moveTaskToBack(true);
+    }
+
+    @OnClick(R.id.submit_message)
+    public void submitSpeech(){
+        String text = messageBox.getText().toString();
+        messageBox.setText("");
+        hideMessageBox(true, text);
+    }
+
+    @OnClick(R.id.cancel_message)
+    public void cancelSpeech(){
+        messageBox.setText("");
+        hideMessageBox(false, null);
+    }
+
+    @OnClick(R.id.import_image)
+    public void importImageFile(){
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "Importer image"), RequestCode.REQUEST_IMAGE_PICK);
     }
 
     @Override
@@ -333,42 +368,69 @@ public class HomeActivity extends FragmentActivity
     private void showMessageBox(){
         frames.get(SPEECH).setVisibility(View.INVISIBLE);
         frames.get(TEXT).setVisibility(View.VISIBLE);
-        YoYo.with(Techniques.SlideInRight).duration(500).playOn(frames.get(TEXT));
+        showMessageLayoutAnimation.playOn(frames.get(TEXT));
     }
 
-    private void hideMessageBoxAndExecute(String text){
+    private void hideMessageBox(boolean shouldExecute, String text){
         final String message = text;
 
-        YoYo.with(Techniques.SlideOutLeft).duration(500).withListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationStart(Animator animation) {
+        if(shouldExecute) {
+            hideMessageLayoutAnimation.withListener(new Animator.AnimatorListener() {
+                @Override
+                public void onAnimationStart(Animator animation) {
 
-            }
+                }
 
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                frames.get(TEXT).setVisibility(View.INVISIBLE);
-                frames.get(SPEECH).setVisibility(View.VISIBLE);
-                addMessage(message);
-                startInterpretationProcess(message);
-            }
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    frames.get(TEXT).setVisibility(View.INVISIBLE);
+                    frames.get(SPEECH).setVisibility(View.VISIBLE);
+                    //addMessage(message);
+                    startInterpretationProcess(message);
+                }
 
-            @Override
-            public void onAnimationCancel(Animator animation) {
+                @Override
+                public void onAnimationCancel(Animator animation) {
 
-            }
+                }
 
-            @Override
-            public void onAnimationRepeat(Animator animation) {
+                @Override
+                public void onAnimationRepeat(Animator animation) {
 
-            }
-        }).playOn(frames.get(TEXT));
+                }
+            }).playOn(frames.get(TEXT));
+        } else {
+            //frames.get(TEXT).setVisibility(View.INVISIBLE);
+            hideMessageLayoutAnimation.withListener(new Animator.AnimatorListener() {
+                @Override
+                public void onAnimationStart(Animator animation) {
+
+                }
+
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    frames.get(SPEECH).setVisibility(View.VISIBLE);
+                }
+
+                @Override
+                public void onAnimationCancel(Animator animation) {
+
+                }
+
+                @Override
+                public void onAnimationRepeat(Animator animation) {
+
+                }
+            }).playOn(frames.get(TEXT));
+        }
     }
 
     public void startInterpretationProcess(String text){
         if(text.isEmpty()){
             return;
         }
+
+        addMessage(text);
 
         try {
             InterpretationObject obj = db.parseSpeech(text);
@@ -435,26 +497,6 @@ public class HomeActivity extends FragmentActivity
         contentListView.insert(sourceAdapter.getCount(), src);
     }
 
-    @Override
-    public void onClick(View v) {
-        switch(v.getId()){
-            case R.id.import_image:
-                Intent intent = new Intent();
-                intent.setType("image/*");
-                intent.setAction(Intent.ACTION_GET_CONTENT);
-                startActivityForResult(Intent.createChooser(intent, "Importer image"), RequestCode.REQUEST_IMAGE_PICK);
-                break;
-
-            case R.id.submit_message:
-                String text = messageBox.getText().toString();
-                messageBox.setText("");
-                hideMessageBoxAndExecute(text);
-                /*addMessage(text);
-                startInterpretationProcess(text);*/
-                break;
-        }
-    }
-
     public void startProcess(){
         // TODO:
         ButterKnife.apply(frames, HIDE);
@@ -468,7 +510,7 @@ public class HomeActivity extends FragmentActivity
     }
 
     public void setFreeSpeechEnabled(boolean enabled){
-
+        freeSpeechModeActivated = enabled;
     }
 
     public void requestAdditionalAttribute(String attributeTag, String attribute){
@@ -483,18 +525,19 @@ public class HomeActivity extends FragmentActivity
     }
 
     @Override
-    public void onConnectionSuspended(int i) {
-
-    }
+    public void onConnectionSuspended(int i) {}
 
     @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
-
-    }
+    public void onConnectionFailed(ConnectionResult connectionResult) {}
 
     @Override
     public void onLocationChanged(Location location) {
         mCurrentLocation = location;
+    }
+
+    @Override
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        setFreeSpeechEnabled(isChecked);
     }
 
     class SourceAdapter extends ArrayAdapter<SourceObject> implements Insertable<SourceObject> {

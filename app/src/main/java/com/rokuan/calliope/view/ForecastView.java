@@ -83,12 +83,18 @@ public class ForecastView extends LinearLayout {
 
             TextView date = (TextView)v.findViewById(R.id.view_forecast_item_date);
             ImageView icon = (ImageView)v.findViewById(R.id.view_forecast_item_image);
-            TextView temperature = (TextView)v.findViewById(R.id.view_forecast_item_temperature);
+            //TextView temperature = (TextView)v.findViewById(R.id.view_forecast_item_temperature);
+            TextView minTemperature = (TextView)v.findViewById(R.id.view_forecast_item_min_temperature);
+            TextView maxTemperature = (TextView)v.findViewById(R.id.view_forecast_item_max_temperature);
 
             date.setText(new SimpleDateFormat("EEE dd MMMMM").format(item.getDate()));
             //icon.setImageBitmap(item.getWeatherImage());
             Picasso.with(this.getContext()).load(OpenWeatherMapAPI.getBitmapURL(item.getWeatherIconName())).into(icon);
-            temperature.setText(Math.round(item.getTemperature()) + "°C");
+            //temperature.setText(Math.round(item.getTemperature()) + "°C");
+            // TODO: verifier l'unite de la temperature
+
+            minTemperature.setText(Math.round(item.getMinTemperature()) + "°C");
+            maxTemperature.setText(Math.round(item.getMaxTemperature()) + "°C");
 
             return v;
         }

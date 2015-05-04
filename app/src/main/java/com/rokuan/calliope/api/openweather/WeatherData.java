@@ -18,6 +18,8 @@ import java.util.Date;
 public class WeatherData {
     private City place;
     private double temperature;
+    private double minTemperature;
+    private double maxTemperature;
     private double humidity;
     private double pressure;
     private double speed;
@@ -56,6 +58,8 @@ public class WeatherData {
         info.date = new Date(json.getLong("dt") * 1000);
 
         info.temperature = main.getDouble("temp");
+        info.minTemperature = main.getDouble("temp_min");
+        info.maxTemperature = main.getDouble("temp_max");
         info.pressure = main.getDouble("pressure");
         info.humidity = main.getInt("humidity");
 
@@ -74,11 +78,6 @@ public class WeatherData {
         info.sunset = new Date(sys.getLong("sunset") * 1000);
 
         return info;
-    }
-
-    public double getTemperature() {
-        // TODO: verifier l'unite de la temperature
-        return (temperature - 273.15);
     }
 
     public double getHumidity() {
@@ -123,5 +122,18 @@ public class WeatherData {
 
     public double getSpeed() {
         return speed;
+    }
+
+    public double getTemperature() {
+        // TODO: verifier l'unite de la temperature
+        return (temperature - 273.15);
+    }
+
+    public double getMinTemperature() {
+        return (minTemperature  - 273.15);
+    }
+
+    public double getMaxTemperature() {
+        return (maxTemperature  - 273.15);
     }
 }

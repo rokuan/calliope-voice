@@ -28,27 +28,29 @@ public class LoadingActivity extends FragmentActivity implements DatabaseLoading
     class DatabaseLoadingAsyncTask extends AsyncTask<Void, Void, Void> {
         @Override
         public void onPreExecute(){
-            try {
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-
-            }
             onLoadingStarted();
         }
 
         @Override
         protected Void doInBackground(Void... params) {
-            loadDatabase();
-            return null;
-        }
-
-        @Override
-        public void onPostExecute(Void result){
             try {
                 Thread.sleep(2000);
             } catch (InterruptedException e) {
 
             }
+
+            loadDatabase();
+
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+
+            }
+            return null;
+        }
+
+        @Override
+        public void onPostExecute(Void result){
             onLoadingEnded();
         }
     }

@@ -24,7 +24,7 @@ public class WeatherView extends LinearLayout {
     }
 
     private void initWeatherView(){
-        this.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+        //this.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
 
         LayoutInflater inflater = (LayoutInflater)this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
@@ -32,12 +32,18 @@ public class WeatherView extends LinearLayout {
 
         TextView placeName = (TextView)this.findViewById(R.id.view_weather_place_name);
         ImageView weatherImage = (ImageView)this.findViewById(R.id.view_weather_image);
-        TextView temperature = (TextView)this.findViewById(R.id.view_weather_temperature);
+        //TextView temperature = (TextView)this.findViewById(R.id.view_weather_temperature);
+        TextView minTemperature = (TextView)this.findViewById(R.id.view_weather_min_temperature);
+        TextView maxTemperature = (TextView)this.findViewById(R.id.view_weather_max_temperature);
+        TextView temperatureUnit = (TextView)this.findViewById(R.id.view_weather_temperature_unit);
 
         placeName.setText(data.getPlace().toString());
         //weatherImage.setImageBitmap(data.getWeatherImage());
         Picasso.with(this.getContext()).load(OpenWeatherMapAPI.getBitmapURL(data.getIcon())).into(weatherImage);
-        temperature.setText(Math.round(data.getTemperature()) + "°C");
+        //temperature.setText(Math.round(data.getTemperature()) + "°C");
+        minTemperature.setText(String.valueOf(Math.round(data.getMinTemperature())));
+        maxTemperature.setText(String.valueOf(Math.round(data.getMaxTemperature())));
+        temperatureUnit.setText("°C");
         // TODO: ajouter les autres champs
     }
 }

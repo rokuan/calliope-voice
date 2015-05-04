@@ -1,8 +1,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:wheel="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.rokuan.calliope.LoadingActivity"
-    android:background="#7F0000"
+    android:background="@color/main_color"
     android:gravity="center"
     android:orientation="vertical"
     >
@@ -12,14 +13,24 @@
         android:layout_width="150dp"
         android:layout_height="150dp">
         <de.hdodenhof.circleimageview.CircleImageView
-            android:layout_gravity="center"
             android:src="@drawable/calliope"
-            android:layout_width="100dp"
-            android:layout_height="100dp" />
-        <ProgressBar
-            android:indeterminate="true"
+            android:layout_margin="5dp"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
+        <!-- <ProgressBar
+            android:indeterminate="true"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" /> -->
+        <com.pnikosis.materialishprogress.ProgressWheel
+            android:id="@+id/progress_wheel"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            wheel:matProg_barWidth="20dp"
+            wheel:matProg_barColor="#7F0000"
+            wheel:matProg_progressIndeterminate="true"
+            wheel:matProg_fillRadius="true" />
     </FrameLayout>
 
     <TextView
