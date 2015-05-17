@@ -44,8 +44,10 @@ import com.rokuan.calliope.constants.RequestCode;
 import com.rokuan.calliope.db.CalliopeSQLiteOpenHelper;
 import com.rokuan.calliope.modules.AlarmModule;
 import com.rokuan.calliope.modules.CalliopeModule;
+import com.rokuan.calliope.modules.DecodeModule;
 import com.rokuan.calliope.modules.GoogleMapsModule;
 import com.rokuan.calliope.modules.InterpretationModule;
+import com.rokuan.calliope.modules.LanguageModule;
 import com.rokuan.calliope.modules.MediaCaptureModule;
 import com.rokuan.calliope.modules.SearchModule;
 import com.rokuan.calliope.modules.SystemModule;
@@ -190,6 +192,8 @@ public class HomeActivity extends FragmentActivity
         modules.add(new TVModule(this));
         modules.add(new SearchModule(this));
         modules.add(new SystemModule(this));
+        //modules.add(new DecodeModule(this));
+        //modules.add(new LanguageModule(this));
     }
 
     @Override

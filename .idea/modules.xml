@@ -2,9 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Calliope-Voice.iml" filepath="$PROJECT_DIR$/Calliope-Voice.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/calliope-voice.iml" filepath="$PROJECT_DIR$/calliope-voice.iml" />
     </modules>
   </component>
 </project>
-

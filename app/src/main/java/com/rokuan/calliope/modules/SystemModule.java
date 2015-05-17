@@ -26,8 +26,10 @@ public class SystemModule extends CalliopeModule {
             ComplementObject compl = (ComplementObject)object.what;
 
             if(compl.object.matches("heure")){
-
+                // TODO: verifier que cela ne capture pas un autre cas
+                return true;
             } else if(compl.object.matches("jour")) {
+                // TODO: verifier que cela ne capture pas un autre cas
                 return true;
             }
         }
