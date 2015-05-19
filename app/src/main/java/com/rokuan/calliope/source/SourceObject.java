@@ -39,4 +39,24 @@ public abstract class SourceObject {
         return type;
     }
     public Context getContext() { return context; };
+
+    public static ObjectType getSourceType(String str){
+        if(str.matches("(photo.* | image(s?))")){
+            return ObjectType.IMAGE;
+        } else if(str.matches("(musique(s?) | chanson(s?))")){
+            return ObjectType.AUDIO;
+        } else if(str.matches("(vidéo(s?))")){
+            return  ObjectType.VIDEO;
+        } else if(str.matches("(adresse | lien)")){
+            return ObjectType.LINK;
+        } else if(str.matches("(SMS | sms | message)")){
+            return ObjectType.SMS;
+        } else if(str.matches("(mail(s?) | e-mail(s?))")){
+            return ObjectType.MAIL;
+        }
+
+        // TODO:
+
+        return null;
+    }
 }

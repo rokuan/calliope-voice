@@ -9,10 +9,13 @@ import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.ActionBarActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -70,6 +73,7 @@ import com.rokuan.calliope.view.TVListingView;
 import com.rokuan.calliope.view.VideoFileView;
 import com.rokuan.calliope.view.WeatherView;
 import com.rokuan.calliopecore.sentence.structure.InterpretationObject;
+import com.software.shell.fab.ActionButton;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -84,10 +88,8 @@ import butterknife.OnClick;
 /**
  * Created by LEBEAU Christophe on 24/03/2015.
  */
-public class HomeActivity extends FragmentActivity
-        implements View.OnTouchListener, RecognitionListener
-        //, View.OnClickListener
-        , GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener, CompoundButton.OnCheckedChangeListener {
+public class HomeActivity extends ActionBarActivity
+        implements View.OnTouchListener, RecognitionListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener, CompoundButton.OnCheckedChangeListener {
     private GoogleApiClient mGoogleApiClient;
     private Location mCurrentLocation;
     private LocationRequest mLocationRequest;
@@ -117,10 +119,9 @@ public class HomeActivity extends FragmentActivity
     private boolean freeSpeechModeActivated = true;
 
     @InjectViews({ R.id.speech_frame, R.id.text_frame, R.id.progress_frame }) List<View> frames;
+    @InjectView(R.id.speech_activate) protected ActionButton speechButton;
     @InjectView(R.id.compose_message) protected EditText messageBox;
     @InjectView(R.id.submit_message) protected ImageButton submitText;
-    @InjectView(R.id.cancel_message) protected ImageButton cancelText;
-    @InjectView(R.id.import_image) protected ImageButton importImage;
     @InjectView(R.id.messages_list) protected DynamicListView contentListView;
 
     public static final ButterKnife.Action<View> HIDE = new ButterKnife.Action<View>() {
@@ -162,7 +163,8 @@ public class HomeActivity extends FragmentActivity
         animAdapter.getViewAnimator().setInitialDelayMillis(100);
         contentListView.setAdapter(animAdapter);
 
-        findViewById(R.id.speech_activate).setOnTouchListener(this);
+        //findViewById(R.id.speech_activate).setOnTouchListener(this);
+        speechButton.setOnTouchListener(this);
         ToggleButton speechModeToggle = (ToggleButton)findViewById(R.id.speech_mode);
         speechModeToggle.setOnCheckedChangeListener(this);
         speechModeToggle.setChecked(freeSpeechModeActivated);
@@ -182,6 +184,34 @@ public class HomeActivity extends FragmentActivity
 
         hideMessageLayoutAnimation = YoYo.with(Techniques.SlideOutLeft).duration(MESSAGEBOX_ANIMATION_DURATION);
         showMessageLayoutAnimation = YoYo.with(Techniques.SlideInRight).duration(MESSAGEBOX_ANIMATION_DURATION);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        } else if (id == R.id.action_import_picture){
+            Intent intent = new Intent();
+            intent.setType("image/*");
+            intent.setAction(Intent.ACTION_GET_CONTENT);
+            startActivityForResult(Intent.createChooser(intent, "Importer image"), RequestCode.REQUEST_IMAGE_PICK);
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     private void addModules(){
@@ -277,25 +307,27 @@ public class HomeActivity extends FragmentActivity
         hideMessageBox(false, null);
     }
 
-    @OnClick(R.id.import_image)
+    /*@OnClick(R.id.import_image)
     public void importImageFile(){
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(Intent.createChooser(intent, "Importer image"), RequestCode.REQUEST_IMAGE_PICK);
-    }
+    }*/
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
         switch(event.getAction()){
             case MotionEvent.ACTION_DOWN:
                 Log.i("Calliope - Recognition", "startListening");
+                speechButton.setState(ActionButton.State.PRESSED);
                 speech.startListening(recognizerIntent);
                 return true;
 
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL:
                 Log.i("Calliope - Recognition", "stopListening");
+                speechButton.setState(ActionButton.State.NORMAL);
                 speech.stopListening();
                 return true;
         }

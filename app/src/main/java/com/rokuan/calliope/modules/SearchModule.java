@@ -32,6 +32,7 @@ public class SearchModule extends CalliopeModule {
                     return true;
             }
         }
+
         return false;
     }
 
@@ -50,6 +51,7 @@ public class SearchModule extends CalliopeModule {
                 }
             }
         }
+
         return false;
     }
 }

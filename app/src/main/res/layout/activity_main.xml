@@ -5,49 +5,15 @@
     android:layout_height="match_parent"
     android:background="#FFFFFF"
     tools:context=".MainActivity">
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/main_color">
-        <LinearLayout
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:padding="2dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            >
-            <ImageButton
-                android:id="@+id/import_image"
-                android:background="#FFFFFF"
-                android:padding="5dp"
-                android:src="@android:drawable/ic_menu_gallery"
-                android:layout_margin="5dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-            <!-- <ImageButton
-                android:id="@+id/import_video"
-                android:background="#FFFFFF"
-                android:padding="5dp"
-                android:src="@android:drawable/camer"
-                android:layout_margin="5dp"
-                android:layout_width="50dp"
-                android:layout_height="40dp" /> -->
-        </LinearLayout>
-    </LinearLayout>
-
     <com.nhaarman.listviewanimations.itemmanipulation.DynamicListView
         android:id="@+id/messages_list"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:transcriptMode="alwaysScroll"
-        android:background="#CCCCCC"
         android:divider="@null">
-
     </com.nhaarman.listviewanimations.itemmanipulation.DynamicListView>
     <FrameLayout
-        android:background="@color/main_color"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <fr.castorflex.android.smoothprogressbar.SmoothProgressBar
@@ -68,12 +34,13 @@
             />
         <LinearLayout
             android:id="@+id/text_frame"
+            android:background="@color/main_color"
             android:gravity="center_vertical"
             android:orientation="horizontal"
             android:padding="5dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <EditText
+            android:layout_height="match_parent">
+            <!-- <EditText
                 android:id="@+id/compose_message"
                 android:layout_margin="5dp"
                 android:background="#FFFFFF"
@@ -85,10 +52,21 @@
                 android:lines="2"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1" /> -->
+            <EditText
+                android:id="@+id/compose_message"
+                android:layout_margin="5dp"
+                android:background="#FFFFFF"
+                android:textColor="#000000"
+                android:gravity="center_vertical"
+                android:padding="5dp"
+                android:singleLine="true"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1" />
-
             <LinearLayout
-                android:orientation="vertical"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
                 <ImageButton
@@ -103,37 +81,43 @@
                     android:layout_height="wrap_content" />
             </LinearLayout>
         </LinearLayout>
-
         <LinearLayout
             android:id="@+id/speech_frame"
             android:orientation="horizontal"
             android:gravity="center_vertical"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:padding="3dp">
-<LinearLayout
-    android:gravity="center"
-    android:layout_weight="1"
-    android:layout_width="0dp"
-    android:layout_height="match_parent">
-    <ToggleButton
-        android:id="@+id/speech_mode"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-</LinearLayout>
+            android:layout_height="match_parent">
             <LinearLayout
                 android:gravity="center"
-                android:background="#FFFFFF"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="match_parent">
+                <ToggleButton
+                    android:id="@+id/speech_mode"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+            <LinearLayout
+                android:gravity="center"
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content">
-                <ImageButton
+                <!-- <ImageButton
                     android:padding="5dp"
                     android:background="@null"
                     android:id="@+id/speech_activate"
                     android:src="@android:drawable/ic_btn_speak_now"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" /> -->
+                <com.software.shell.fab.ActionButton
+                    xmlns:fab="http://schemas.android.com/apk/res-auto"
+                    android:id="@+id/speech_activate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    fab:button_color="#FFFFFF"
+                    fab:image="@android:drawable/ic_btn_speak_now"
+                    fab:shadow_yOffset="0dp"
+                    />
             </LinearLayout>
             <LinearLayout
                 android:gravity="center"
