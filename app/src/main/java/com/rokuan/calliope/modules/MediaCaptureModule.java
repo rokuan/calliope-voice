@@ -1,26 +1,15 @@
 package com.rokuan.calliope.modules;
 
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.net.Uri;
-import android.os.Environment;
-import android.os.Parcel;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
 import android.widget.Toast;
 
 import com.rokuan.calliope.HomeActivity;
 import com.rokuan.calliope.constants.RequestCode;
 import com.rokuan.calliopecore.sentence.Action;
-import com.rokuan.calliopecore.sentence.structure.ComplementObject;
 import com.rokuan.calliopecore.sentence.structure.InterpretationObject;
-import com.rokuan.calliopecore.sentence.structure.NominalGroup;
-
-import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
+import com.rokuan.calliopecore.sentence.structure.nominal.ComplementObject;
+import com.rokuan.calliopecore.sentence.structure.nominal.NominalGroup;
 
 
 /**
@@ -42,7 +31,7 @@ public class MediaCaptureModule extends CalliopeModule {
 
     @Override
     public boolean submit(InterpretationObject object) {
-        if(object.what != null && object.what.getType() == NominalGroup.GroupType.NOMINAL_GROUP) {
+        if(object.what != null && object.what.getType() == NominalGroup.GroupType.COMPLEMENT) {
             ComplementObject compl = (ComplementObject)object.what;
 
             if(compl.object != null) {

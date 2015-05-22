@@ -4,9 +4,9 @@ import android.content.Context;
 
 import com.rokuan.calliope.HomeActivity;
 import com.rokuan.calliopecore.sentence.Action;
-import com.rokuan.calliopecore.sentence.structure.ComplementObject;
 import com.rokuan.calliopecore.sentence.structure.InterpretationObject;
-import com.rokuan.calliopecore.sentence.structure.NominalGroup;
+import com.rokuan.calliopecore.sentence.structure.nominal.ComplementObject;
+import com.rokuan.calliopecore.sentence.structure.nominal.NominalGroup;
 
 /**
  * Created by LEBEAU Christophe on 15/04/2015.
@@ -27,7 +27,7 @@ public class MessageModule extends CalliopeModule {
 
     @Override
     public boolean submit(InterpretationObject object) {
-        if(object.what != null && object.what.getType() == NominalGroup.GroupType.NOMINAL_GROUP){
+        if(object.what != null && object.what.getType() == NominalGroup.GroupType.COMPLEMENT){
             ComplementObject compl = (ComplementObject)object.what;
 
             if(compl.object.matches(SMS_CONTENT_REGEX)){

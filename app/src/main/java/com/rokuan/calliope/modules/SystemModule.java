@@ -3,10 +3,10 @@ package com.rokuan.calliope.modules;
 import com.rokuan.calliope.HomeActivity;
 import com.rokuan.calliope.source.TextSource;
 import com.rokuan.calliopecore.sentence.Action;
-import com.rokuan.calliopecore.sentence.structure.ComplementObject;
 import com.rokuan.calliopecore.sentence.structure.InterpretationObject;
-import com.rokuan.calliopecore.sentence.structure.NominalGroup;
 import com.rokuan.calliopecore.sentence.structure.QuestionObject;
+import com.rokuan.calliopecore.sentence.structure.nominal.ComplementObject;
+import com.rokuan.calliopecore.sentence.structure.nominal.NominalGroup;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -22,7 +22,7 @@ public class SystemModule extends CalliopeModule {
 
     @Override
     public boolean canHandle(InterpretationObject object) {
-        if(object.what != null && object.what.getType() == NominalGroup.GroupType.NOMINAL_GROUP){
+        if(object.what != null && object.what.getType() == NominalGroup.GroupType.COMPLEMENT){
             ComplementObject compl = (ComplementObject)object.what;
 
             if(compl.object.matches("heure")){
@@ -39,7 +39,7 @@ public class SystemModule extends CalliopeModule {
 
     @Override
     public boolean submit(InterpretationObject object) {
-        if(object.what != null && object.what.getType() == NominalGroup.GroupType.NOMINAL_GROUP){
+        if(object.what != null && object.what.getType() == NominalGroup.GroupType.COMPLEMENT){
             ComplementObject compl = (ComplementObject)object.what;
 
             if(compl.object.matches("heure")){

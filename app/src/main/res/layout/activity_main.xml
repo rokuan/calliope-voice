@@ -5,14 +5,39 @@
     android:layout_height="match_parent"
     android:background="#FFFFFF"
     tools:context=".MainActivity">
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
     <com.nhaarman.listviewanimations.itemmanipulation.DynamicListView
         android:id="@+id/messages_list"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_height="match_parent"
         android:transcriptMode="alwaysScroll"
         android:divider="@null">
     </com.nhaarman.listviewanimations.itemmanipulation.DynamicListView>
+        <LinearLayout
+            android:id="@+id/text_form"
+            android:visibility="invisible"
+            android:background="#007FFF"
+            android:padding="5dp"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <EditText
+                android:id="@+id/text_source_content"
+                android:padding="5dp"
+                android:lines="3"
+                android:background="#FFFFFF"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+            <Button
+                android:id="@+id/add_text_source"
+                android:text="@string/submit_text_source"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+    </FrameLayout>
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">

@@ -21,11 +21,11 @@ import com.rokuan.calliope.utils.Connectivity;
 import com.rokuan.calliope.utils.RemoteData;
 import com.rokuan.calliope.view.ForecastView;
 import com.rokuan.calliope.view.WeatherView;
-import com.rokuan.calliopecore.sentence.structure.ComplementObject;
 import com.rokuan.calliopecore.sentence.structure.InterpretationObject;
-import com.rokuan.calliopecore.sentence.structure.NominalGroup;
 import com.rokuan.calliopecore.sentence.structure.data.place.PlaceObject;
 import com.rokuan.calliopecore.sentence.structure.data.place.StateObject;
+import com.rokuan.calliopecore.sentence.structure.nominal.ComplementObject;
+import com.rokuan.calliopecore.sentence.structure.nominal.NominalGroup;
 
 import org.apache.http.Header;
 import org.json.JSONArray;
@@ -49,7 +49,7 @@ public class WeatherModule extends CalliopeModule implements WeatherDataResultCa
 
     @Override
     public boolean canHandle(InterpretationObject object) {
-        if(object.what != null && object.what.getType() == NominalGroup.GroupType.NOMINAL_GROUP){
+        if(object.what != null && object.what.getType() == NominalGroup.GroupType.COMPLEMENT){
             ComplementObject compl = (ComplementObject)object.what;
 
             if(compl.object.matches(CONTENT_REGEX)){
@@ -63,7 +63,7 @@ public class WeatherModule extends CalliopeModule implements WeatherDataResultCa
     @Override
     public boolean submit(InterpretationObject object) {
         // TODO:
-        if(object.what != null && object.what.getType() == NominalGroup.GroupType.NOMINAL_GROUP){
+        if(object.what != null && object.what.getType() == NominalGroup.GroupType.COMPLEMENT){
             ComplementObject compl = (ComplementObject)object.what;
 
             if(compl.object.matches(WEATHER_CONTENT_REGEX)){

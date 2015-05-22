@@ -22,6 +22,7 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -58,9 +59,11 @@ import com.rokuan.calliope.modules.TVModule;
 import com.rokuan.calliope.modules.WeatherModule;
 import com.rokuan.calliope.source.AlarmSource;
 import com.rokuan.calliope.source.AudioFileSource;
+import com.rokuan.calliope.source.CommandSource;
 import com.rokuan.calliope.source.ForecastSource;
 import com.rokuan.calliope.source.ImageFileSource;
 import com.rokuan.calliope.source.SourceObject;
+import com.rokuan.calliope.source.SourceObjectProvider;
 import com.rokuan.calliope.source.TVListingsSource;
 import com.rokuan.calliope.source.TextSource;
 import com.rokuan.calliope.source.VideoFileSource;
@@ -89,7 +92,7 @@ import butterknife.OnClick;
  * Created by LEBEAU Christophe on 24/03/2015.
  */
 public class HomeActivity extends ActionBarActivity
-        implements View.OnTouchListener, RecognitionListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener, CompoundButton.OnCheckedChangeListener {
+        implements View.OnTouchListener, RecognitionListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener, CompoundButton.OnCheckedChangeListener, SourceObjectProvider {
     private GoogleApiClient mGoogleApiClient;
     private Location mCurrentLocation;
     private LocationRequest mLocationRequest;
@@ -123,6 +126,9 @@ public class HomeActivity extends ActionBarActivity
     @InjectView(R.id.compose_message) protected EditText messageBox;
     @InjectView(R.id.submit_message) protected ImageButton submitText;
     @InjectView(R.id.messages_list) protected DynamicListView contentListView;
+    @InjectView(R.id.text_form) protected View textFormLayout;
+    @InjectView(R.id.add_text_source) protected Button addTextButton;
+    @InjectView(R.id.text_source_content) protected EditText textContent;
 
     public static final ButterKnife.Action<View> HIDE = new ButterKnife.Action<View>() {
         @Override
@@ -182,6 +188,20 @@ public class HomeActivity extends ActionBarActivity
             }
         });
 
+        addTextButton.setEnabled(false);
+        textContent.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                addTextButton.setEnabled(!textContent.getText().toString().isEmpty());
+            }
+        });
+
         hideMessageLayoutAnimation = YoYo.with(Techniques.SlideOutLeft).duration(MESSAGEBOX_ANIMATION_DURATION);
         showMessageLayoutAnimation = YoYo.with(Techniques.SlideInRight).duration(MESSAGEBOX_ANIMATION_DURATION);
     }
@@ -201,14 +221,18 @@ public class HomeActivity extends ActionBarActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        /*if (id == R.id.action_settings) {
             return true;
-        } else if (id == R.id.action_import_picture){
+        } else*/
+        if(id == R.id.action_import_picture){
             Intent intent = new Intent();
             intent.setType("image/*");
             intent.setAction(Intent.ACTION_GET_CONTENT);
             startActivityForResult(Intent.createChooser(intent, "Importer image"), RequestCode.REQUEST_IMAGE_PICK);
             return true;
+        } else if(id == R.id.action_import_text) {
+            textContent.setText("");
+            textFormLayout.setVisibility(textFormLayout.getVisibility() == View.INVISIBLE ? View.VISIBLE : View.INVISIBLE);
         }
 
         return super.onOptionsItemSelected(item);
@@ -223,7 +247,7 @@ public class HomeActivity extends ActionBarActivity
         modules.add(new SearchModule(this));
         modules.add(new SystemModule(this));
         //modules.add(new DecodeModule(this));
-        //modules.add(new LanguageModule(this));
+        modules.add(new LanguageModule(this));
     }
 
     @Override
@@ -305,6 +329,19 @@ public class HomeActivity extends ActionBarActivity
     public void cancelSpeech(){
         messageBox.setText("");
         hideMessageBox(false, null);
+    }
+
+    @OnClick(R.id.add_text_source)
+    public void submitTextSource(){
+        // TODO: ajouter une animation
+        textFormLayout.setVisibility(View.INVISIBLE);
+
+        String text = textContent.getText().toString();
+        textContent.setText("");
+
+        if(!text.isEmpty()){
+            addText(text);
+        }
     }
 
     /*@OnClick(R.id.import_image)
@@ -421,7 +458,7 @@ public class HomeActivity extends ActionBarActivity
                 public void onAnimationEnd(Animator animation) {
                     frames.get(TEXT).setVisibility(View.INVISIBLE);
                     frames.get(SPEECH).setVisibility(View.VISIBLE);
-                    //addMessage(message);
+                    //addCommand(message);
                     startInterpretationProcess(message);
                 }
 
@@ -466,7 +503,7 @@ public class HomeActivity extends ActionBarActivity
             return;
         }
 
-        addMessage(text);
+        addCommand(text);
 
         try {
             InterpretationObject obj = db.parseSpeech(text);
@@ -519,9 +556,14 @@ public class HomeActivity extends ActionBarActivity
         addSource(image);
     }
 
-    private void addMessage(String text){
-        TextSource textSrc = new TextSource(text);
-        addSource(textSrc);
+    private void addText(String text){
+        TextSource txtSrc = new TextSource(text);
+        addSource(txtSrc);
+    }
+
+    private void addCommand(String cmd){
+        CommandSource cmdSrc = new CommandSource(cmd);
+        addSource(cmdSrc);
     }
 
     private void addVideo(Uri videoUri){
@@ -529,6 +571,24 @@ public class HomeActivity extends ActionBarActivity
         addSource(video);
     }
 
+    @Override
+    public SourceObject getLastSourceOfType(SourceObject.ObjectType type) {
+        try{
+            for(int i=sources.size() - 1; i>=0; i--){
+                SourceObject item = sources.get(i);
+
+                if(item.getType() == type){
+                    return sources.get(i);
+                }
+            }
+        }catch(Exception e) {
+            return null;
+        }
+
+        return null;
+    }
+
+    @Override
     public void addSource(SourceObject src){
         contentListView.insert(sourceAdapter.getCount(), src);
     }
@@ -603,6 +663,11 @@ public class HomeActivity extends ActionBarActivity
             switch(type){
                 case ALARM:
                     itemView = new AlarmView(this.getContext(), ((AlarmSource)item).getTime());
+                    break;
+                case COMMAND:
+                    TextView commandView = new TextView(this.getContext());
+                    commandView.setText(((CommandSource)item).getCommand());
+                    itemView = commandView;
                     break;
                 case TEXT:
                     TextView textView = new TextView(this.getContext());

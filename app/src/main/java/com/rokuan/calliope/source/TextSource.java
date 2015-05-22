@@ -14,7 +14,6 @@ public class TextSource extends SourceObject implements TextExtractor {
         text = t;
     }
 
-
     @Override
     public String getText() {
         return text;

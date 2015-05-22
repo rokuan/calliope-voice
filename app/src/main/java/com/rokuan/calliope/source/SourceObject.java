@@ -7,6 +7,7 @@ import android.content.Context;
  */
 public abstract class SourceObject {
     public enum ObjectType {
+        COMMAND,
         TEXT,
         IMAGE,
         AUDIO,
@@ -53,6 +54,8 @@ public abstract class SourceObject {
             return ObjectType.SMS;
         } else if(str.matches("(mail(s?) | e-mail(s?))")){
             return ObjectType.MAIL;
+        } else if(str.matches("(texte | phrase)")){
+            return ObjectType.TEXT;
         }
 
         // TODO:

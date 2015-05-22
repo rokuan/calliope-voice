@@ -4,11 +4,11 @@ import android.content.Context;
 
 import com.rokuan.calliope.HomeActivity;
 import com.rokuan.calliopecore.sentence.Action;
-import com.rokuan.calliopecore.sentence.structure.ComplementObject;
 import com.rokuan.calliopecore.sentence.structure.InterpretationObject;
-import com.rokuan.calliopecore.sentence.structure.NominalGroup;
 import com.rokuan.calliopecore.sentence.structure.OrderObject;
 import com.rokuan.calliopecore.sentence.structure.QuestionObject;
+import com.rokuan.calliopecore.sentence.structure.nominal.ComplementObject;
+import com.rokuan.calliopecore.sentence.structure.nominal.NominalGroup;
 
 /**
  * Created by LEBEAU Christophe on 25/03/2015.
@@ -26,7 +26,7 @@ public class ContactModule extends CalliopeModule {
     @Override
     public boolean canHandle(InterpretationObject object) {
         if(object.what != null){
-            if(object.what.getType() == NominalGroup.GroupType.NOMINAL_GROUP) {
+            if(object.what.getType() == NominalGroup.GroupType.COMPLEMENT) {
                 ComplementObject compl = (ComplementObject) object.what;
                 return compl.object != null && compl.object.matches(CONTACT_REGEX);
             }
@@ -51,7 +51,7 @@ public class ContactModule extends CalliopeModule {
                 return submit(order);
             }
         } else if(object.getType() == InterpretationObject.RequestType.ORDER){
-            if(object.what != null && object.what.getType() == NominalGroup.GroupType.NOMINAL_GROUP){
+            if(object.what != null && object.what.getType() == NominalGroup.GroupType.COMPLEMENT){
                 ComplementObject compl = (ComplementObject)object.what;
 
                 if(compl.object != null) {

@@ -9,4 +9,6 @@
     <string name="action_settings">Settings</string>
 
     <string name="openweathermap_api_key">c6257f4b44a211a56159c25313fc4818</string>
+
+    <string name="submit_text_source">Ajouter</string>
 </resources>

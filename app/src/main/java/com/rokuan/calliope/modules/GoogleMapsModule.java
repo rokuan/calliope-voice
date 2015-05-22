@@ -6,13 +6,13 @@ import android.net.Uri;
 
 import com.rokuan.calliope.HomeActivity;
 import com.rokuan.calliopecore.sentence.Action;
-import com.rokuan.calliopecore.sentence.structure.ComplementObject;
 import com.rokuan.calliopecore.sentence.structure.InterpretationObject;
-import com.rokuan.calliopecore.sentence.structure.NominalGroup;
 import com.rokuan.calliopecore.sentence.structure.OrderObject;
 import com.rokuan.calliopecore.sentence.structure.QuestionObject;
 import com.rokuan.calliopecore.sentence.structure.data.place.MonumentObject;
 import com.rokuan.calliopecore.sentence.structure.data.place.PlaceObject;
+import com.rokuan.calliopecore.sentence.structure.nominal.ComplementObject;
+import com.rokuan.calliopecore.sentence.structure.nominal.NominalGroup;
 
 /**
  * Created by LEBEAU Christophe on 24/03/2015.
@@ -27,7 +27,7 @@ public class GoogleMapsModule extends CalliopeModule {
 
     @Override
     public boolean canHandle(InterpretationObject object) {
-        if(object.what != null && object.what.getType() == NominalGroup.GroupType.NOMINAL_GROUP){
+        if(object.what != null && object.what.getType() == NominalGroup.GroupType.COMPLEMENT){
             ComplementObject compl = (ComplementObject)object.what;
 
             if(compl.object.matches(PLACES_REGEX) || compl.object.matches(MAP_REGEX)){
@@ -71,8 +71,11 @@ public class GoogleMapsModule extends CalliopeModule {
 
             if(question.qType == QuestionObject.QuestionType.HOW && question.action == Action.VerbAction.GO){
                 if(question.where != null){
-                    showNavigation(question.where, question.how);
-                    return true;
+                    if(question.how != null && question.how.getType() == NominalGroup.GroupType.COMPLEMENT) {
+                        String mode = ((ComplementObject) question.how).object;
+                        showNavigation(question.where, mode);
+                        return true;
+                    }
                 }
 
                 return false;
@@ -87,7 +90,7 @@ public class GoogleMapsModule extends CalliopeModule {
                 case SHOW:
                 case FIND:
                 case SEARCH:
-                    if (object.what != null && object.what.getType() == NominalGroup.GroupType.NOMINAL_GROUP) {
+                    if (object.what != null && object.what.getType() == NominalGroup.GroupType.COMPLEMENT) {
                         ComplementObject compl = (ComplementObject)object.what;
 
                         if (compl.object.matches(PLACES_REGEX)) {
