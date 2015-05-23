@@ -9,6 +9,9 @@
     <string name="action_settings">Settings</string>
 
     <string name="openweathermap_api_key">c6257f4b44a211a56159c25313fc4818</string>
+    <string name="google_apis_key">AIzaSyCj5813HYENupNIP4wQAmIXZrGmW7rEFJ0</string>
+    <string name="microsoft_client_key">foqHbAyP1/N4MQcu/fSq7lHPgexdE2IFbOtXsuM/bkg</string>
+    <string name="microsoft_client_id">7510b098-165b-4814-b49e-43460ea162b2</string>
 
     <string name="submit_text_source">Ajouter</string>
 </resources>

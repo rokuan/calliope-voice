@@ -3,7 +3,6 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
     tools:context=".MainActivity">
     <FrameLayout
         android:layout_width="match_parent"
@@ -28,6 +27,7 @@
                 android:id="@+id/text_source_content"
                 android:padding="5dp"
                 android:lines="3"
+                android:gravity="top|left"
                 android:background="#FFFFFF"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />

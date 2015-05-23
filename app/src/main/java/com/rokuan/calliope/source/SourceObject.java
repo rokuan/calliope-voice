@@ -21,7 +21,8 @@ public abstract class SourceObject {
         WORD,
         EVENT,
         SMS,
-        MAIL
+        MAIL,
+        TRANSLATION
     }
 
     private Context context;

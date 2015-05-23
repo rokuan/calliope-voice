@@ -66,6 +66,7 @@ import com.rokuan.calliope.source.SourceObject;
 import com.rokuan.calliope.source.SourceObjectProvider;
 import com.rokuan.calliope.source.TVListingsSource;
 import com.rokuan.calliope.source.TextSource;
+import com.rokuan.calliope.source.TranslationSource;
 import com.rokuan.calliope.source.VideoFileSource;
 import com.rokuan.calliope.source.WeatherSource;
 import com.rokuan.calliope.view.AlarmView;
@@ -73,6 +74,7 @@ import com.rokuan.calliope.view.AudioFileView;
 import com.rokuan.calliope.view.ForecastView;
 import com.rokuan.calliope.view.PictureFileView;
 import com.rokuan.calliope.view.TVListingView;
+import com.rokuan.calliope.view.TranslationView;
 import com.rokuan.calliope.view.VideoFileView;
 import com.rokuan.calliope.view.WeatherView;
 import com.rokuan.calliopecore.sentence.structure.InterpretationObject;
@@ -671,6 +673,7 @@ public class HomeActivity extends ActionBarActivity
                     break;
                 case TEXT:
                     TextView textView = new TextView(this.getContext());
+                    // TODO: faire une TextView qui wrap le content
                     textView.setText(((TextSource)item).getText());
                     itemView = textView;
                     break;
@@ -691,6 +694,9 @@ public class HomeActivity extends ActionBarActivity
                     break;
                 case TV_LISTING:
                     itemView = new TVListingView(this.getContext(), ((TVListingsSource)item).getProgramList());
+                    break;
+                case TRANSLATION:
+                    itemView = new TranslationView(this.getContext(), ((TranslationSource)item).getTranslationData());
                     break;
                 case LINK:
                 case PERSON:
