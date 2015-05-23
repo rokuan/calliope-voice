@@ -71,8 +71,10 @@ import com.rokuan.calliope.source.VideoFileSource;
 import com.rokuan.calliope.source.WeatherSource;
 import com.rokuan.calliope.view.AlarmView;
 import com.rokuan.calliope.view.AudioFileView;
+import com.rokuan.calliope.view.CommandView;
 import com.rokuan.calliope.view.ForecastView;
 import com.rokuan.calliope.view.PictureFileView;
+import com.rokuan.calliope.view.StringView;
 import com.rokuan.calliope.view.TVListingView;
 import com.rokuan.calliope.view.TranslationView;
 import com.rokuan.calliope.view.VideoFileView;
@@ -667,15 +669,10 @@ public class HomeActivity extends ActionBarActivity
                     itemView = new AlarmView(this.getContext(), ((AlarmSource)item).getTime());
                     break;
                 case COMMAND:
-                    TextView commandView = new TextView(this.getContext());
-                    commandView.setText(((CommandSource)item).getCommand());
-                    itemView = commandView;
+                    itemView = new CommandView(this.getContext(), ((CommandSource)item).getCommand());
                     break;
                 case TEXT:
-                    TextView textView = new TextView(this.getContext());
-                    // TODO: faire une TextView qui wrap le content
-                    textView.setText(((TextSource)item).getText());
-                    itemView = textView;
+                    itemView = new StringView(this.getContext(), ((TextSource)item).getText());
                     break;
                 case IMAGE:
                     itemView = new PictureFileView(this.getContext(), ((ImageFileSource)item).getFileUri());

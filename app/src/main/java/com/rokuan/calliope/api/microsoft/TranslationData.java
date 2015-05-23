@@ -1,7 +1,7 @@
-package com.rokuan.calliope.api.google;
+package com.rokuan.calliope.api.microsoft;
 
 /**
- * Created by Lebeau Lucie on 22/05/15.
+ * Created by LEBEAU Christophe on 22/05/15.
  */
 public class TranslationData {
     private String sourceLanguage;

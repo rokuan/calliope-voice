@@ -6,13 +6,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.rokuan.calliope.R;
-import com.rokuan.calliope.api.google.TranslationData;
+import com.rokuan.calliope.api.microsoft.TranslationData;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
 /**
- * Created by Lebeau Lucie on 22/05/15.
+ * Created by LEBEAU Christophe on 22/05/15.
  */
 public class TranslationView extends LinearLayout {
     private TranslationData data;
@@ -28,6 +28,7 @@ public class TranslationView extends LinearLayout {
     }
 
     private void initTranslationView(){
+        this.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
         LayoutInflater inflater = (LayoutInflater)this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         inflater.inflate(R.layout.view_translation, this);

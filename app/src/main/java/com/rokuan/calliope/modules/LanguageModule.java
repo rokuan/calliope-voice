@@ -1,11 +1,10 @@
 package com.rokuan.calliope.modules;
 
-import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.JsonHttpResponseHandler;
+import android.os.AsyncTask;
+
 import com.rokuan.calliope.HomeActivity;
 import com.rokuan.calliope.api.ResultCallback;
-import com.rokuan.calliope.api.google.GoogleTranslateAPI;
-import com.rokuan.calliope.api.google.TranslationData;
+import com.rokuan.calliope.api.microsoft.TranslationData;
 import com.rokuan.calliope.api.microsoft.MicrosoftTranslatorAPI;
 import com.rokuan.calliope.source.SourceObject;
 import com.rokuan.calliope.source.TextSource;
@@ -15,17 +14,53 @@ import com.rokuan.calliopecore.sentence.structure.InterpretationObject;
 import com.rokuan.calliopecore.sentence.structure.nominal.LanguageObject;
 import com.rokuan.calliopecore.sentence.structure.nominal.NominalGroup;
 
-import org.apache.http.Header;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.Locale;
 
 /**
- * Created by Lebeau Lucie on 18/05/15.
+ * Created by LEBEAU Christophe on 18/05/15.
  */
 public class LanguageModule extends CalliopeModule implements ResultCallback<TranslationData> {
+    class MicrosoftTranslatorAsyncTask extends AsyncTask<String, Void, TranslationData> {
+        private HomeActivity activity;
+        private boolean success = false;
+
+        public MicrosoftTranslatorAsyncTask(HomeActivity act){
+            activity = act;
+        }
+
+        @Override
+        protected void onPreExecute(){
+            super.onPreExecute();
+            activity.startProcess();
+        }
+
+        /*private synchronized void setSuccess(boolean s){
+            success = s;
+        }*/
+
+        @Override
+        protected TranslationData doInBackground(String... strings) {
+            TranslationData data = MicrosoftTranslatorAPI.translateText(activity, strings[0], strings[1]);
+
+            if(data != null){
+                success = true;
+            }
+
+            return data;
+        }
+
+        @Override
+        protected void onPostExecute(TranslationData result){
+            if(success){
+                activity.addSource(new TranslationSource(result));
+            } else {
+                // TODO: ajouter un message d'erreur
+            }
+
+            activity.endProcess();
+        }
+    }
+
     public LanguageModule(HomeActivity a) {
         super(a);
     }
@@ -73,6 +108,7 @@ public class LanguageModule extends CalliopeModule implements ResultCallback<Tra
 
     private void translateText(final String text, final String toLang){
         // TODO: verifier la connexion a internet
+        new MicrosoftTranslatorAsyncTask(this.getActivity()).execute(text, toLang);
 
         /*AsyncHttpClient client = new AsyncHttpClient();
         String apiURL = GoogleTranslateAPI.getTranslationURL(this.getActivity(), text, null, toLang);
@@ -115,9 +151,7 @@ public class LanguageModule extends CalliopeModule implements ResultCallback<Tra
                 LanguageModule.this.getActivity().endProcess();
             }
         });*/
-        MicrosoftTranslatorAPI.translateText(this.getActivity(), text, toLang, new JsonHttpResponseHandler(){
-            // TODO:
-        });
+
     }
 
     @Override

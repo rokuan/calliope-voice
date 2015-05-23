@@ -4,10 +4,10 @@ import com.rokuan.calliope.HomeActivity;
 import com.rokuan.calliopecore.sentence.structure.InterpretationObject;
 
 /**
- * Created by LEBEAU Christophe on 18/05/15.
+ * Created by LEBEAU Christophe on 23/05/15.
  */
-public class DecodeModule extends CalliopeModule {
-    public DecodeModule(HomeActivity a) {
+public class SocialNetworkModule extends CalliopeModule {
+    public SocialNetworkModule(HomeActivity a) {
         super(a);
     }
 

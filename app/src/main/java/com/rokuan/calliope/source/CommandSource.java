@@ -1,7 +1,7 @@
 package com.rokuan.calliope.source;
 
 /**
- * Created by Lebeau Lucie on 21/05/15.
+ * Created by LEBEAU Christophe on 21/05/15.
  */
 public class CommandSource extends SourceObject {
     private String command;
