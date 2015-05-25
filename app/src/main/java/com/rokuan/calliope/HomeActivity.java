@@ -1,7 +1,9 @@
 package com.rokuan.calliope;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
@@ -57,11 +59,13 @@ import com.rokuan.calliope.modules.SearchModule;
 import com.rokuan.calliope.modules.SystemModule;
 import com.rokuan.calliope.modules.TVModule;
 import com.rokuan.calliope.modules.WeatherModule;
+import com.rokuan.calliope.receiver.IncomingSmsReceiver;
 import com.rokuan.calliope.source.AlarmSource;
 import com.rokuan.calliope.source.AudioFileSource;
 import com.rokuan.calliope.source.CommandSource;
 import com.rokuan.calliope.source.ForecastSource;
 import com.rokuan.calliope.source.ImageFileSource;
+import com.rokuan.calliope.source.SmsSource;
 import com.rokuan.calliope.source.SourceObject;
 import com.rokuan.calliope.source.SourceObjectProvider;
 import com.rokuan.calliope.source.TVListingsSource;
@@ -74,6 +78,7 @@ import com.rokuan.calliope.view.AudioFileView;
 import com.rokuan.calliope.view.CommandView;
 import com.rokuan.calliope.view.ForecastView;
 import com.rokuan.calliope.view.PictureFileView;
+import com.rokuan.calliope.view.SmsView;
 import com.rokuan.calliope.view.StringView;
 import com.rokuan.calliope.view.TVListingView;
 import com.rokuan.calliope.view.TranslationView;
@@ -122,6 +127,7 @@ public class HomeActivity extends ActionBarActivity
 
     private List<InterpretationModule> modules = new ArrayList<InterpretationModule>();
     private LinkedList<SourceObject> sources = new LinkedList<>();
+    private List<BroadcastReceiver> receivers = new ArrayList<>();
 
     private boolean freeSpeechModeActivated = true;
 
@@ -208,6 +214,9 @@ public class HomeActivity extends ActionBarActivity
 
         hideMessageLayoutAnimation = YoYo.with(Techniques.SlideOutLeft).duration(MESSAGEBOX_ANIMATION_DURATION);
         showMessageLayoutAnimation = YoYo.with(Techniques.SlideInRight).duration(MESSAGEBOX_ANIMATION_DURATION);
+
+        addModules();
+        addReceivers();
     }
 
     @Override
@@ -254,6 +263,20 @@ public class HomeActivity extends ActionBarActivity
         modules.add(new LanguageModule(this));
     }
 
+    private void addReceivers(){
+        receivers.add(new IncomingSmsReceiver(this));
+    }
+
+    private void registerReceivers(){
+        this.registerReceiver(receivers.get(0), new IntentFilter("android.provider.Telephony.SMS_RECEIVED"));
+    }
+
+    private void unregisterReceivers(){
+        for(int i=0; i<receivers.size(); i++){
+            this.unregisterReceiver(receivers.get(i));
+        }
+    }
+
     @Override
     public void onPause(){
         super.onPause();
@@ -268,6 +291,7 @@ public class HomeActivity extends ActionBarActivity
         }
 
         stopLocationUpdates();
+        unregisterReceivers();
     }
 
     protected void startLocationUpdates() {
@@ -307,7 +331,7 @@ public class HomeActivity extends ActionBarActivity
         speech.setRecognitionListener(this);
 
         //if (mGoogleApiClient.isConnected() && !mRequestingLocationUpdates) {
-        addModules();
+
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
@@ -315,6 +339,8 @@ public class HomeActivity extends ActionBarActivity
                 .addApi(LocationServices.API)
                 .build();
         mGoogleApiClient.connect();
+
+        registerReceivers();
     }
 
     @Override
@@ -695,11 +721,13 @@ public class HomeActivity extends ActionBarActivity
                 case TRANSLATION:
                     itemView = new TranslationView(this.getContext(), ((TranslationSource)item).getTranslationData());
                     break;
+                case SMS:
+                    itemView = new SmsView(this.getContext(), ((SmsSource)item).getData());
+                    break;
                 case LINK:
                 case PERSON:
                 case WORD:
                 case EVENT:
-                case SMS:
                 case MAIL:
                 default:
                     return null;

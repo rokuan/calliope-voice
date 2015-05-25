@@ -8,8 +8,12 @@ import com.rokuan.calliope.receiver.SmsData;
 public class SmsSource extends SourceObject {
     private SmsData data;
 
-    public SmsSource(ObjectType ty, SmsData d) {
-        super(ty);
+    public SmsSource(SmsData d) {
+        super(ObjectType.SMS);
         data = d;
+    }
+
+    public SmsData getData(){
+        return data;
     }
 }

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <LinearLayout
+        android:padding="5dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    <ImageView
+        android:src="@android:drawable/sym_action_email"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <TextView
+        android:id="@+id/view_sms_targets"
+        android:text="Tonton David, Larusso, Yannick, 2Be3, The Fugees, Shaggy"
+        android:textColor="#000000"
+        android:gravity="right"
+        android:singleLine="true"
+        android:ellipsize="marquee"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    </LinearLayout>
+    <TextView
+        android:id="@+id/view_sms_content"
+        android:padding="5dp"
+        android:text="Chacun sa route, chacun son chemin. Tu m'oublieras. Ces soirées-là hinhin hinhin. 2Be3 or not to be. Strumming my pain with his fingers. But she caught me on the counter (It wasn't me !)"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minLines="1"
+        android:maxLines="5" />
+</LinearLayout>
