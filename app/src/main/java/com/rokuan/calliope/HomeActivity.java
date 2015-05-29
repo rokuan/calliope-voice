@@ -216,7 +216,7 @@ public class HomeActivity extends ActionBarActivity
         showMessageLayoutAnimation = YoYo.with(Techniques.SlideInRight).duration(MESSAGEBOX_ANIMATION_DURATION);
 
         addModules();
-        addReceivers();
+        //addReceivers();
     }
 
     @Override
@@ -291,14 +291,14 @@ public class HomeActivity extends ActionBarActivity
         }
 
         stopLocationUpdates();
-        unregisterReceivers();
+        //unregisterReceivers();
     }
 
     protected void startLocationUpdates() {
         mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(60000);
         mLocationRequest.setFastestInterval(30000);
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_LOW_POWER);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
         LocationServices.FusedLocationApi.requestLocationUpdates(
                 mGoogleApiClient, mLocationRequest, this);
     }
@@ -340,7 +340,7 @@ public class HomeActivity extends ActionBarActivity
                 .build();
         mGoogleApiClient.connect();
 
-        registerReceivers();
+        //registerReceivers();
     }
 
     @Override

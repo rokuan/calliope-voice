@@ -1,7 +1,6 @@
 package com.rokuan.calliope.view;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +11,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.rokuan.calliope.R;
-import com.rokuan.calliope.api.openweather.ForecastData;
+import com.rokuan.calliope.api.darksky.ForecastData;
 import com.rokuan.calliope.api.openweather.OpenWeatherMapAPI;
 import com.squareup.picasso.Picasso;
 
@@ -39,7 +38,7 @@ public class ForecastView extends LinearLayout {
 
         TextView placeName = (TextView)this.findViewById(R.id.view_forecast_place);
         ListView listView = (ListView)this.findViewById(R.id.view_forecast_list);
-        SingleWeatherDataAdapter adapter = new SingleWeatherDataAdapter(this.getContext(), data.getForecast());
+        SingleWeatherDataAdapter adapter = new SingleWeatherDataAdapter(this.getContext(), data.getBlocks());
 
         placeName.setText(data.getCity().toString());
         listView.setAdapter(adapter);
@@ -63,10 +62,10 @@ public class ForecastView extends LinearLayout {
         listView.requestLayout();
     }
 
-    class SingleWeatherDataAdapter extends ArrayAdapter<ForecastData.SingleWeatherData> {
+    class SingleWeatherDataAdapter extends ArrayAdapter<ForecastData.ForecastBlock> {
         private LayoutInflater inflater;
 
-        public SingleWeatherDataAdapter(Context context, List<ForecastData.SingleWeatherData> objects) {
+        public SingleWeatherDataAdapter(Context context, List<ForecastData.ForecastBlock> objects) {
             super(context, R.layout.view_forecast_item, objects);
             inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         }
@@ -79,7 +78,7 @@ public class ForecastView extends LinearLayout {
                 v = inflater.inflate(R.layout.view_forecast_item, parent, false);
             }
 
-            ForecastData.SingleWeatherData item = this.getItem(position);
+            ForecastData.ForecastBlock item = this.getItem(position);
 
             TextView date = (TextView)v.findViewById(R.id.view_forecast_item_date);
             ImageView icon = (ImageView)v.findViewById(R.id.view_forecast_item_image);
@@ -89,7 +88,9 @@ public class ForecastView extends LinearLayout {
 
             date.setText(new SimpleDateFormat("EEE dd MMMMM").format(item.getDate()));
             //icon.setImageBitmap(item.getWeatherImage());
-            Picasso.with(this.getContext()).load(OpenWeatherMapAPI.getBitmapURL(item.getWeatherIconName())).into(icon);
+            //Picasso.with(this.getContext()).load(OpenWeatherMapAPI.getBitmapURLFromWeatherType(item.getIcon())).into(icon);
+            // TODO: mettre la bonne icone
+            Picasso.with(this.getContext()).load(R.drawable.calliope).into(icon);
             //temperature.setText(Math.round(item.getTemperature()) + "°C");
             // TODO: verifier l'unite de la temperature
 

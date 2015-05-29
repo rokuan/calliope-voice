@@ -1,6 +1,7 @@
 package com.rokuan.calliope.source;
 
-import com.rokuan.calliope.api.openweather.ForecastData;
+
+import com.rokuan.calliope.api.darksky.ForecastData;
 
 /**
  * Created by LEBEAU Christophe on 29/04/2015.

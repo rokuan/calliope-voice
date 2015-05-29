@@ -48,6 +48,7 @@ public class SystemModule extends CalliopeModule {
 
                     if(qObject.qType == QuestionObject.QuestionType.WHAT && qObject.action == Action.VerbAction.BE){
                         displayTime(object);
+                        return true;
                     }
                 }
             } else if(compl.object.matches("jour")) {

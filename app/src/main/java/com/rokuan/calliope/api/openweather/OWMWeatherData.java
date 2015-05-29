@@ -15,7 +15,7 @@ import java.util.Date;
 /**
  * Created by LEBEAU Christophe on 16/04/2015.
  */
-public class WeatherData {
+public class OWMWeatherData {
     private City place;
     private double temperature;
     private double minTemperature;
@@ -33,7 +33,7 @@ public class WeatherData {
     /**
      * Constructs an empty instance of WeatherData
      */
-    protected WeatherData(){
+    protected OWMWeatherData(){
 
     }
 
@@ -43,8 +43,8 @@ public class WeatherData {
      * @return a new WeatherData instance with filled attributes
      * @throws JSONException
      */
-    public static WeatherData buildFromJSON(Context context, JSONObject json) throws JSONException {
-        WeatherData info = new WeatherData();
+    public static OWMWeatherData buildFromJSON(Context context, JSONObject json) throws JSONException {
+        OWMWeatherData info = new OWMWeatherData();
 
         JSONObject main = json.getJSONObject("main");
         JSONObject weather = json.getJSONArray("weather").getJSONObject(0);

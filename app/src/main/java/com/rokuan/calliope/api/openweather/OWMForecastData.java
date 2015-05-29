@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * Created by LEBEAU Christophe on 16/04/2015.
  */
-public class ForecastData {
+public class OWMForecastData {
     public static class SingleWeatherData {
         private static final int TEMP_DAY = 0;
         private static final int TEMP_MIN = 1;
@@ -145,8 +145,8 @@ public class ForecastData {
         return forecast;
     }
 
-    public static ForecastData buildFromJSON(JSONObject json) throws JSONException {
-        ForecastData data = new ForecastData();
+    public static OWMForecastData buildFromJSON(JSONObject json) throws JSONException {
+        OWMForecastData data = new OWMForecastData();
         int resultsSize = json.getInt("cnt");
         JSONArray elements = json.getJSONArray("list");
 

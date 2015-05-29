@@ -7,17 +7,17 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.rokuan.calliope.R;
+import com.rokuan.calliope.api.openweather.OWMWeatherData;
 import com.rokuan.calliope.api.openweather.OpenWeatherMapAPI;
-import com.rokuan.calliope.api.openweather.WeatherData;
 import com.squareup.picasso.Picasso;
 
 /**
  * Created by LEBEAU Christophe on 16/04/2015.
  */
 public class WeatherView extends LinearLayout {
-    private WeatherData data;
+    private OWMWeatherData data;
 
-    public WeatherView(Context context, WeatherData wData) {
+    public WeatherView(Context context, OWMWeatherData wData) {
         super(context);
         data = wData;
         initWeatherView();
