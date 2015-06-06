@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.rokuan.calliope.R;
+import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
 
@@ -28,16 +29,15 @@ public class PictureFileView extends LinearLayout {
 
     private void initPictureView(){
         LayoutInflater inflater = (LayoutInflater)this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
         inflater.inflate(R.layout.view_picture, this);
-
         ImageView imageView = (ImageView)findViewById(R.id.view_picture_content);
-        try {
+        /*try {
             Bitmap bmp = MediaStore.Images.Media.getBitmap(this.getContext().getContentResolver(), pictureUri);
             imageView.setImageBitmap(bmp);
         } catch (IOException e) {
             // TODO:
             e.printStackTrace();
-        }
+        }*/
+        Picasso.with(this.getContext()).load(pictureUri).into(imageView);
     }
 }

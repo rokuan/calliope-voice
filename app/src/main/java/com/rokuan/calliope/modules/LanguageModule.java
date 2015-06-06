@@ -84,6 +84,7 @@ public class LanguageModule extends CalliopeModule implements ResultCallback<Tra
             switch((Action.VerbAction)object.action){
                 case TRANSLATE:
                 case CONVERT:
+                case MODIFY_APPEARANCE:
                     SourceObject.ObjectType defaultType = SourceObject.ObjectType.TEXT;
                     String langCode = Locale.getDefault().getLanguage();
 
@@ -100,6 +101,7 @@ public class LanguageModule extends CalliopeModule implements ResultCallback<Tra
                     } else {
                         // TODO: afficher un message d'erreur
                     }
+                    break;
             }
         }
 

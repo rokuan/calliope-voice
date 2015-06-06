@@ -11,6 +11,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.rokuan.calliope.R;
+import com.rokuan.calliope.api.darksky.DarkSkyForecastAPI;
 import com.rokuan.calliope.api.darksky.ForecastData;
 import com.rokuan.calliope.api.openweather.OpenWeatherMapAPI;
 import com.squareup.picasso.Picasso;
@@ -18,11 +19,17 @@ import com.squareup.picasso.Picasso;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+
 /**
  * Created by LEBEAU Christophe on 16/04/2015.
  */
 public class ForecastView extends LinearLayout {
     private ForecastData data;
+
+    @InjectView(R.id.view_forecast_place) protected TextView placeName;
+    @InjectView(R.id.view_forecast_list) protected ListView forecastListView;
 
     public ForecastView(Context context, ForecastData fData) {
         super(context);
@@ -33,33 +40,31 @@ public class ForecastView extends LinearLayout {
     private void initForecastView(){
         //this.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
         LayoutInflater inflater = (LayoutInflater)this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
         inflater.inflate(R.layout.view_forecast, this);
+        ButterKnife.inject(this);
 
-        TextView placeName = (TextView)this.findViewById(R.id.view_forecast_place);
-        ListView listView = (ListView)this.findViewById(R.id.view_forecast_list);
         SingleWeatherDataAdapter adapter = new SingleWeatherDataAdapter(this.getContext(), data.getBlocks());
 
         placeName.setText(data.getCity().toString());
-        listView.setAdapter(adapter);
+        forecastListView.setAdapter(adapter);
 
         int totalItemsHeight = 0;
         int itemsCount = adapter.getCount();
 
         for (int itemPos = 0; itemPos < itemsCount; itemPos++) {
-            View item = adapter.getView(itemPos, null, listView);
+            View item = adapter.getView(itemPos, null, forecastListView);
             item.measure(0, 0);
             totalItemsHeight += item.getMeasuredHeight();
         }
 
         // Get total height of all item dividers.
-        int totalDividersHeight = listView.getDividerHeight() * (itemsCount - 1);
+        int totalDividersHeight = forecastListView.getDividerHeight() * (itemsCount - 1);
 
         // Set list height.
-        ViewGroup.LayoutParams params = listView.getLayoutParams();
+        ViewGroup.LayoutParams params = forecastListView.getLayoutParams();
         params.height = totalItemsHeight + totalDividersHeight;
-        listView.setLayoutParams(params);
-        listView.requestLayout();
+        forecastListView.setLayoutParams(params);
+        forecastListView.requestLayout();
     }
 
     class SingleWeatherDataAdapter extends ArrayAdapter<ForecastData.ForecastBlock> {
@@ -87,13 +92,8 @@ public class ForecastView extends LinearLayout {
             TextView maxTemperature = (TextView)v.findViewById(R.id.view_forecast_item_max_temperature);
 
             date.setText(new SimpleDateFormat("EEE dd MMMMM").format(item.getDate()));
-            //icon.setImageBitmap(item.getWeatherImage());
-            //Picasso.with(this.getContext()).load(OpenWeatherMapAPI.getBitmapURLFromWeatherType(item.getIcon())).into(icon);
-            // TODO: mettre la bonne icone
-            Picasso.with(this.getContext()).load(R.drawable.calliope).into(icon);
-            //temperature.setText(Math.round(item.getTemperature()) + "°C");
+            Picasso.with(this.getContext()).load(DarkSkyForecastAPI.getDrawableIdFromWeatherType(this.getContext(), item.getIcon())).into(icon);
             // TODO: verifier l'unite de la temperature
-
             minTemperature.setText(Math.round(item.getMinTemperature()) + "°C");
             maxTemperature.setText(Math.round(item.getMaxTemperature()) + "°C");
 

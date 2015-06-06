@@ -314,7 +314,7 @@ public class HomeActivity extends ActionBarActivity
         return mCurrentLocation;
     }
 
-    public void onSaveInstanceState(Bundle savedInstanceState) {
+    protected void onSaveInstanceState(Bundle savedInstanceState) {
         /*savedInstanceState.putBoolean(REQUESTING_LOCATION_UPDATES_KEY,
                 mRequestingLocationUpdates);*/
         savedInstanceState.putParcelable(LOCATION_KEY, mCurrentLocation);
@@ -575,6 +575,9 @@ public class HomeActivity extends ActionBarActivity
             Uri videoUri = data.getData();
             addVideo(videoUri);
             Log.i("REQUEST_VIDEO_CAPTURE", "OK");
+        } else if(requestCode == RequestCode.REQUEST_AUDIO_CAPTURE && resultCode == RESULT_OK){
+            Uri soundUri = data.getData();
+            addAudio(soundUri);
         } else if(requestCode == RequestCode.REQUEST_IMAGE_PICK && resultCode == RESULT_OK){
             Uri pictureUri = data.getData();
             addImage(pictureUri);
@@ -601,6 +604,11 @@ public class HomeActivity extends ActionBarActivity
         addSource(video);
     }
 
+    private void addAudio(Uri audioUri){
+        AudioFileSource audio = new AudioFileSource(audioUri);
+        addSource(audio);
+    }
+
     @Override
     public SourceObject getLastSourceOfType(SourceObject.ObjectType type) {
         try{
@@ -611,7 +619,7 @@ public class HomeActivity extends ActionBarActivity
                     return sources.get(i);
                 }
             }
-        }catch(Exception e) {
+        }catch(Exception e){
             return null;
         }
 

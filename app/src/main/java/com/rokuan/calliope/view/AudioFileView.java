@@ -32,7 +32,8 @@ public class AudioFileView extends LinearLayout {
     @InjectView(R.id.view_audio_play_pause) protected ImageButton playPauseButton;
     @InjectView(R.id.view_audio_stop) protected ImageButton stopButton;
     @InjectView(R.id.view_audio_progress) protected SeekBar progress;
-    @InjectView(R.id.view_audio_time) protected TextView durationTextView;
+    @InjectView(R.id.view_audio_elapsed_time) protected TextView elapsedTimeView;
+    @InjectView(R.id.view_audio_remaining_time) protected TextView remainingTimeView;
 
     public AudioFileView(Context context, Uri u) {
         super(context);
@@ -41,15 +42,19 @@ public class AudioFileView extends LinearLayout {
     }
 
     private void initAudioFileView(){
+        this.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
         LayoutInflater inflater = (LayoutInflater)this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         inflater.inflate(R.layout.view_audio, this);
 
         ButterKnife.inject(this);
 
+        stopButton.setEnabled(false);
+
         player = new MediaPlayer();
 
         try {
             player.setDataSource(this.getContext(), audioUri);
+            //player.
             // TODO: accorder la seekbar avec l'avancement
         } catch (IOException e) {
             e.printStackTrace();

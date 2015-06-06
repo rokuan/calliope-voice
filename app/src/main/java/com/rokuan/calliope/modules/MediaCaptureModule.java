@@ -19,6 +19,7 @@ public class MediaCaptureModule extends CalliopeModule {
     //private static final String PICTURES_PATH = "calliope/pictures/";
     //private static final String MEDIA_REGEX = "(microphone|caméscope|caméra|((photo|vidéo)(s?)))";
     private static final String MEDIA_REGEX = "(microphone|caméscope|caméra|photo|vidéo)";
+    private static final String AUDIO_RECORDER_REGEX = "(micro(phone?))";
 
     public MediaCaptureModule(HomeActivity a) {
         super(a);
@@ -71,6 +72,14 @@ public class MediaCaptureModule extends CalliopeModule {
                             captureVideo();
                             return true;
                     }
+                } else if(compl.object.matches(AUDIO_RECORDER_REGEX)){
+                    switch((Action.VerbAction)object.action){
+                        case START:
+                        case OPEN:
+                        case THROW__START:
+                            captureSound();
+                            return true;
+                    }
                 }
             }
         }
@@ -95,6 +104,11 @@ public class MediaCaptureModule extends CalliopeModule {
         } else {
             Toast.makeText(this.getActivity(), "Aucune application ne prend en charge cette action", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void captureSound(){
+        Intent intent = new Intent(MediaStore.Audio.Media.RECORD_SOUND_ACTION);
+        this.getActivity().startActivityForResult(intent, RequestCode.REQUEST_AUDIO_CAPTURE);
     }
 
     private void openCameraOnPictureMode(){

@@ -25,7 +25,7 @@ public class DarkSkyForecastAPI {
         finalURL += location.getLatitude() + "," + location.getLongitude();
 
         if(date != null){
-            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-ddTHH:mm:ss");
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
             //finalURL += "," + date.getTime();
             finalURL += "," + formatter.format(date);
         }
@@ -33,7 +33,7 @@ public class DarkSkyForecastAPI {
         return finalURL;
     }
 
-    /*public static int getDrawableIdFromWeatherType(String name){
+    public static int getDrawableIdFromWeatherType(Context context, String name){
         //clear-day,
                 //clear-night,
                 // rain,
@@ -44,5 +44,14 @@ public class DarkSkyForecastAPI {
                 // cloudy,
                 // partly-cloudy-day, or
                 // partly-cloudy-night
-    }*/
+        String drawableFormatName = name.replaceAll("-", "_");
+        int id = context.getResources().getIdentifier(drawableFormatName, "drawable", context.getPackageName());
+
+        if(id == 0){
+            // TODO: trouver une icone par defaut
+            id = R.drawable.clear_day;
+        }
+
+        return id;
+    }
 }

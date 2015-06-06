@@ -24,12 +24,17 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+
 /**
  * Created by LEBEAU Christophe on 16/04/2015.
  */
 public class TVListingView extends LinearLayout {
-    private ListView listings;
-    private Spinner channelSelection;
+
+    @InjectView(R.id.view_tvlisting_channel) protected Spinner channelSelection;
+    @InjectView(R.id.view_tvlisting_list) protected ListView listings;
+
     private ArrayAdapter<String> spinnerAdapter;
     private List<TVProgram> programs;
     private TVProgramAdapter programsAdapter;
@@ -42,10 +47,10 @@ public class TVListingView extends LinearLayout {
 
     private void initTVListingView(){
         this.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-
         LayoutInflater inflater = (LayoutInflater)this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
         inflater.inflate(R.layout.view_tvlisting, this);
+
+        ButterKnife.inject(this);
 
         channelSelection = (Spinner)this.findViewById(R.id.view_tvlisting_channel);
         listings = (ListView)this.findViewById(R.id.view_tvlisting_list);

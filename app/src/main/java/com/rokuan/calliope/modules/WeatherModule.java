@@ -73,6 +73,11 @@ public class WeatherModule extends CalliopeModule implements ResultCallback<Fore
                     period = object.when;
                 } else if(compl.when != null){
                     period = compl.when;
+                } else {
+                    SingleTimeObject todayObject = new SingleTimeObject();
+                    todayObject.dateDefinition = TimeObject.DateDefinition.DATE_AND_TIME;
+                    todayObject.date = new Date();
+                    period = todayObject;
                 }
 
                 fetchWeatherData(WEATHER, stateLocation, period);

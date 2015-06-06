@@ -51,7 +51,7 @@ public class ForecastData {
             block.date = new Date(json.getLong("time") * 1000);
             block.summary = json.getString("summary");
             // TODO:
-            block.icon = null;
+            block.icon = json.getString("icon");
             block.sunrise = new Date(json.getLong("sunriseTime") * 1000);
             block.sunset = new Date(json.getLong("sunsetTime") * 1000);
             //block.precipitationType = json.getString("precipType");
