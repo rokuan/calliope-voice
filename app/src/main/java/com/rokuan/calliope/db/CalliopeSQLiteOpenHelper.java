@@ -453,7 +453,7 @@ public class CalliopeSQLiteOpenHelper extends SQLiteOpenHelper implements WordDa
         Word result = null;
         Cursor selection;
 
-        if(w.matches(DateConverter.fullTimeRegex) || w.matches(DateConverter.hourOnlyRegex)){
+        if(w.matches(DateConverter.FULL_TIME_REGEX) || w.matches(DateConverter.HOUR_ONLY_REGEX)){
             return new Word(w, Word.WordType.TIME);
         }
 

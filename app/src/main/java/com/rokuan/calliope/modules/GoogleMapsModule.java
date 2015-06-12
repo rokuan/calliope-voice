@@ -121,10 +121,10 @@ public class GoogleMapsModule extends CalliopeModule {
         return false;
     }
 
-    private void showNavigation(PlaceObject place, String meanOfTransport){
+    private void showNavigation(NominalGroup place, String meanOfTransport){
         String queryString = "google.navigation:q=";
 
-        if(place.getType() == PlaceObject.PlaceType.MONUMENT){
+        if(place.getType() == NominalGroup.GroupType.PLACE){
             MonumentObject monument = (MonumentObject)place;
             queryString += monument.name;
 

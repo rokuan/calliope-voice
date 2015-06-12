@@ -112,7 +112,7 @@
             android:gravity="center_vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-            <LinearLayout
+            <!-- <LinearLayout
                 android:gravity="center"
                 android:layout_weight="1"
                 android:layout_width="0dp"
@@ -121,7 +121,7 @@
                     android:id="@+id/speech_mode"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
-            </LinearLayout>
+            </LinearLayout> -->
             <LinearLayout
                 android:gravity="center"
                 android:layout_weight="1"
@@ -144,11 +144,11 @@
                     fab:shadow_yOffset="0dp"
                     />
             </LinearLayout>
-            <LinearLayout
+            <!-- <LinearLayout
                 android:gravity="center"
                 android:layout_weight="1"
                 android:layout_width="0dp"
-                android:layout_height="match_parent"></LinearLayout>
+                android:layout_height="match_parent"></LinearLayout> -->
         </LinearLayout>
     </FrameLayout>
 </LinearLayout>

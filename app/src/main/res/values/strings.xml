@@ -16,4 +16,5 @@
 
     <string name="submit_text_source">Ajouter</string>
     <string name="action_import_text">Ajouter texte</string>
+    <string name="action_import_picture">Importer image</string>
 </resources>

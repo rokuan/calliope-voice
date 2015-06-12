@@ -10,10 +10,14 @@ import static org.hamcrest.Matchers.*;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.ViewInteraction;
 import android.support.test.espresso.action.ViewActions;
+import android.support.test.espresso.matcher.BoundedMatcher;
 import android.test.ActivityInstrumentationTestCase2;
 
 import com.rokuan.calliope.source.SourceObject;
+import com.rokuan.calliope.source.TextSource;
 
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -42,6 +46,20 @@ public class ActionTest extends ActivityInstrumentationTestCase2<HomeActivity> {
     private void closeTextForm(){
         ViewInteraction importText = onView(withId(R.id.action_import_text));
         importText.perform(click());
+    }
+
+    public static Matcher<Object> withContent(final String text) {
+        return new BoundedMatcher<Object, SourceObject>(SourceObject.class) {
+            @Override
+            public boolean matchesSafely(SourceObject obj) {
+                return obj.getType() == SourceObject.ObjectType.TEXT && ((TextSource)obj).getText().equals(text);
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("'" + text + "'");
+            }
+        };
     }
 
     @Test
@@ -91,6 +109,9 @@ public class ActionTest extends ActivityInstrumentationTestCase2<HomeActivity> {
         onView(withId(R.id.text_form))
                 .check(matches(not(isDisplayed())));
         // TODO: A view should be added with the content of the EditText
-        onData(allOf(is(instanceOf(SourceObject.class)))).inAdapterView(withId(R.id.messages_list));
+        onData(allOf(is(instanceOf(SourceObject.class))))
+                .inAdapterView(withId(R.id.messages_list))
+                .atPosition(0)
+                .check(matches(withContent(textToSubmit)));
     }
 }

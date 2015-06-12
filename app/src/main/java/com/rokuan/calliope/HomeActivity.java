@@ -139,6 +139,7 @@ public class HomeActivity extends ActionBarActivity
     @InjectView(R.id.text_form) protected View textFormLayout;
     @InjectView(R.id.add_text_source) protected Button addTextButton;
     @InjectView(R.id.text_source_content) protected EditText textContent;
+    //@InjectView(R.id.speech_mode) protected ToggleButton speechModeToggle;
 
     public static final ButterKnife.Action<View> HIDE = new ButterKnife.Action<View>() {
         @Override
@@ -181,9 +182,8 @@ public class HomeActivity extends ActionBarActivity
 
         //findViewById(R.id.speech_activate).setOnTouchListener(this);
         speechButton.setOnTouchListener(this);
-        ToggleButton speechModeToggle = (ToggleButton)findViewById(R.id.speech_mode);
-        speechModeToggle.setOnCheckedChangeListener(this);
-        speechModeToggle.setChecked(freeSpeechModeActivated);
+        /*speechModeToggle.setOnCheckedChangeListener(this);
+        speechModeToggle.setChecked(freeSpeechModeActivated);*/
         submitText.setEnabled(false);
         messageBox.addTextChangedListener(new TextWatcher() {
             @Override
@@ -234,9 +234,6 @@ public class HomeActivity extends ActionBarActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        /*if (id == R.id.action_settings) {
-            return true;
-        } else*/
         if(id == R.id.action_import_picture){
             Intent intent = new Intent();
             intent.setType("image/*");

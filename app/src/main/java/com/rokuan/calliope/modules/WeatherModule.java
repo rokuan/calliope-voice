@@ -65,7 +65,7 @@ public class WeatherModule extends CalliopeModule implements ResultCallback<Fore
                 StateObject stateLocation = null;
                 TimeObject period = null;
 
-                if(object.where != null && object.where.getType() == PlaceObject.PlaceType.STATE){
+                if(object.where != null && object.where.getType() == NominalGroup.GroupType.STATE){
                     stateLocation = (StateObject)object.where;
                 }
 
@@ -86,7 +86,7 @@ public class WeatherModule extends CalliopeModule implements ResultCallback<Fore
                 StateObject stateLocation = null;
                 TimeObject period = null;
 
-                if(object.where != null && object.where.getType() == PlaceObject.PlaceType.STATE){
+                if(object.where != null && object.where.getType() == NominalGroup.GroupType.STATE){
                     stateLocation = (StateObject)object.where;
                 }
 
