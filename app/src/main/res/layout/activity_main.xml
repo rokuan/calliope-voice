@@ -8,13 +8,13 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1">
-    <com.nhaarman.listviewanimations.itemmanipulation.DynamicListView
-        android:id="@+id/messages_list"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:transcriptMode="alwaysScroll"
-        android:divider="@null">
-    </com.nhaarman.listviewanimations.itemmanipulation.DynamicListView>
+        <com.nhaarman.listviewanimations.itemmanipulation.DynamicListView
+            android:id="@+id/messages_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:transcriptMode="alwaysScroll"
+            android:divider="@null">
+        </com.nhaarman.listviewanimations.itemmanipulation.DynamicListView>
         <LinearLayout
             android:id="@+id/text_form"
             android:visibility="invisible"

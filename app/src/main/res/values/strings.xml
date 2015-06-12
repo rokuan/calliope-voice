@@ -15,4 +15,5 @@
     <string name="darksky_api_key">13805aa2d9c44a7fa91bf3f355f6f452</string>
 
     <string name="submit_text_source">Ajouter</string>
+    <string name="action_import_text">Ajouter texte</string>
 </resources>
