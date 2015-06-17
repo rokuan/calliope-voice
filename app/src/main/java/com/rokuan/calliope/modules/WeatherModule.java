@@ -1,11 +1,16 @@
 package com.rokuan.calliope.modules;
 
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
+import android.os.AsyncTask;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
+import com.loopj.android.http.SyncHttpClient;
 import com.rokuan.calliope.HomeActivity;
 import com.rokuan.calliope.api.ResultCallback;
 import com.rokuan.calliope.api.darksky.DarkSkyForecastAPI;
@@ -24,7 +29,9 @@ import org.apache.http.Header;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -37,6 +44,66 @@ public class WeatherModule extends CalliopeModule implements ResultCallback<Fore
 
     private static final int WEATHER = 0;
     private static final int FORECAST = 1;
+
+    class ForecastAsyncTask extends AsyncTask<Object, Void, ForecastData> {
+        private String cityName;
+        private JSONObject data;
+        private boolean success = true;
+
+        @Override
+        protected void onPreExecute(){
+            WeatherModule.this.getActivity().startProcess();
+        }
+
+        @Override
+        protected ForecastData doInBackground(Object... objects) {
+            Location currentLocation = (Location)objects[0];
+            Date date = (Date)objects[1];
+            Geocoder geocoder = new Geocoder(WeatherModule.this.getActivity());
+
+            try {
+                List<Address> addresses = geocoder.getFromLocation(currentLocation.getLatitude(), currentLocation.getLongitude(), 1);
+                cityName = addresses.get(0).getLocality();
+                Log.i("CityName", cityName);
+            } catch (IOException e) {
+                e.printStackTrace();
+                success = false;
+            }
+
+            if(success){
+                DarkSkyForecastAPI.getSync(WeatherModule.this.getActivity(), currentLocation, date, new JsonHttpResponseHandler(){
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, JSONObject result) {
+                        data = result;
+                        try {
+                            data.put("_additional_city_attribute", cityName);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                        success = false;
+                    }
+                });
+            }
+
+            try {
+                return ForecastData.buildFromJSON(data);
+            } catch (JSONException e) {
+                e.printStackTrace();
+                success = false;
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(ForecastData result){
+            WeatherModule.this.onResult(success, result);
+            WeatherModule.this.getActivity().endProcess();
+        }
+    }
 
     public WeatherModule(HomeActivity a) {
         super(a);
@@ -63,7 +130,7 @@ public class WeatherModule extends CalliopeModule implements ResultCallback<Fore
 
             if(compl.object.matches(WEATHER_CONTENT_REGEX)){
                 StateObject stateLocation = null;
-                TimeObject period = null;
+                TimeObject period;
 
                 if(object.where != null && object.where.getType() == NominalGroup.GroupType.STATE){
                     stateLocation = (StateObject)object.where;
@@ -117,6 +184,13 @@ public class WeatherModule extends CalliopeModule implements ResultCallback<Fore
             currentLocation = this.getActivity().getCurrentLocation();
         } else {
             // TODO: recuperer ville (+ pays)
+            Log.i("Location specified", state.city.getName());
+
+            if(state.city != null) {
+                currentLocation = new Location("");
+                currentLocation.setLatitude(state.city.getLatitude());
+                currentLocation.setLongitude(state.city.getLongitude());
+            }
         }
 
         if(period != null){
@@ -127,39 +201,7 @@ public class WeatherModule extends CalliopeModule implements ResultCallback<Fore
             }
         }
 
-        AsyncHttpClient client = new AsyncHttpClient();
-        RequestParams params = new RequestParams();
-
-        params.put("exclude", "minutely,hourly");
-        params.put("lang", Locale.getDefault().getLanguage());
-        params.put("units", "si");
-
-        client.get(DarkSkyForecastAPI.getForecastURL(this.getActivity(), currentLocation, date), params, new JsonHttpResponseHandler(){
-            @Override
-            public void onStart(){
-                WeatherModule.this.getActivity().startProcess();
-            }
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject result) {
-                try {
-                    WeatherModule.this.onResult(true, ForecastData.buildFromJSON(result));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    WeatherModule.this.onResult(false, null);
-                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                WeatherModule.this.onResult(false, null);
-            }
-
-            @Override
-            public void onFinish(){
-                WeatherModule.this.getActivity().endProcess();
-            }
-        });
+        new ForecastAsyncTask().execute(currentLocation, date);
     }
 
     @Override

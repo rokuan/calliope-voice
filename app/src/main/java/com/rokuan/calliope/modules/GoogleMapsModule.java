@@ -71,11 +71,14 @@ public class GoogleMapsModule extends CalliopeModule {
 
             if(question.qType == QuestionObject.QuestionType.HOW && question.action == Action.VerbAction.GO){
                 if(question.where != null){
+                    String mode = null;
+
                     if(question.how != null && question.how.getType() == NominalGroup.GroupType.COMPLEMENT) {
-                        String mode = ((ComplementObject) question.how).object;
-                        showNavigation(question.where, mode);
-                        return true;
+                        mode = ((ComplementObject) question.how).object;
                     }
+
+                    showNavigation(question.where, mode);
+                    return true;
                 }
 
                 return false;

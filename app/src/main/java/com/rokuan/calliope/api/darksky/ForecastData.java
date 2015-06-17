@@ -114,8 +114,9 @@ public class ForecastData {
     public static ForecastData buildFromJSON(JSONObject json) throws JSONException {
         ForecastData data = new ForecastData();
 
-        String timezone = json.getString("timezone");
-        data.city = timezone.substring(timezone.indexOf('/') + 1);
+        /*String timezone = json.getString("timezone");
+        data.city = timezone.substring(timezone.indexOf('/') + 1);*/
+        data.city = json.getString("_additional_city_attribute");
 
         JSONArray dailyData = json.getJSONObject("daily").getJSONArray("data");
 

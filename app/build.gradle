@@ -19,6 +19,7 @@ dependencies {
     compile 'com.pnikosis:materialish-progress:1.5'
     compile 'com.github.shell-software:fab:1.1.0'
     compile 'com.github.rey5137:material:1.1.1'
+    compile 'de.greenrobot:eventbus:2.4.0'
     androidTestCompile 'com.android.support.test:runner:0.3'
     androidTestCompile 'com.android.support.test:rules:0.3'
     androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2'

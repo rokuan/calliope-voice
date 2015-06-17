@@ -8,11 +8,14 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.rokuan.calliope.R;
 import com.rokuan.calliope.constants.DataFile;
 import com.rokuan.calliopecore.parser.Parser;
 import com.rokuan.calliopecore.parser.SpeechParser;
 import com.rokuan.calliopecore.parser.WordBuffer;
 import com.rokuan.calliopecore.parser.WordDatabase;
+import com.rokuan.calliopecore.sentence.CityInfo;
+import com.rokuan.calliopecore.sentence.CountryInfo;
 import com.rokuan.calliopecore.sentence.LanguageInfo;
 import com.rokuan.calliopecore.sentence.Verb;
 import com.rokuan.calliopecore.sentence.VerbConjugation;
@@ -28,6 +31,8 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import de.greenrobot.event.EventBus;
+
 
 /**
  * Created by LEBEAU Christophe on 19/02/2015.
@@ -40,19 +45,21 @@ public class CalliopeSQLiteOpenHelper extends SQLiteOpenHelper implements WordDa
     private static final int CONJUGATION = 1;
     private static final int WORDS = 2;
     private static final int COUNTRIES = 3;
-    private static final int FIRSTNAMES = 4;
+    private static final int CITIES = 4;
     private static final int LANGUAGES = 5;
+    private static final int FIRSTNAMES = 6;
 
     private static final String[] TABLES = new String[]{
             "verbs",
             "conjugation",
             "words",
             "countries",
-            "firstnames",
-            "languages"
+            "cities",
+            "languages",
+            "firstnames"
     };
 
-    private static final String[] excludeNumericalPosition = new String[]{
+    private static final String[] NOT_A_NUMERICAL_POSITION = new String[]{
             "antépénultième",
             "combientième",
             "énième",
@@ -77,16 +84,14 @@ public class CalliopeSQLiteOpenHelper extends SQLiteOpenHelper implements WordDa
     public static final String WORD_NAME = "word_name";
     public static final String WORD_CATEGORY = "word_category";
 
-    //public static final String COUNTRY_ID = "country_id";
     public static final String COUNTRY_CODE = "country_code";
     public static final String COUNTRY_CODE_EXTENDED = "country_code_extended";
     public static final String COUNTRY_NAME = "country_name";
-    /*public static final String CITY_ID = "city_id";
-    public static final String CITY_CODE = "city_code";
-    public static final String CITY_CODE_EXTENDED = "city_code_extended";
-    public static final String CITY_NAME = "city_name";*/
-    /*public static final String CITY_FR_NAME = "city_name";
-    public static final String CITY_EN_NAME = "city_en_name"*/
+
+    public static final String CITY_ID = "city_id";
+    public static final String CITY_NAME = "city_name";
+    public static final String CITY_LATITUDE = "city_latitude";
+    public static final String CITY_LONGITUDE = "city_longitude";
 
     public static final String LANGUAGE_CODE = "language_code";
     public static final String LANGUAGE_NAME = "language_name";
@@ -119,7 +124,12 @@ public class CalliopeSQLiteOpenHelper extends SQLiteOpenHelper implements WordDa
             COUNTRY_CODE_EXTENDED + " VARCHAR(3) UNIQUE, " +
             COUNTRY_NAME + " TEXT NOT NULL" +
             ")";
-
+    private static final String CITY_QUERY = "CREATE TABLE " + TABLES[CITIES] + " (" +
+            CITY_ID + " INTEGER PRIMARY KEY, " +
+            CITY_NAME + " TEXT NOT NULL, " +
+            CITY_LATITUDE + " NUMERIC NOT NULL, " +
+            CITY_LONGITUDE + " NUMERIC NOT NULL" +
+            ")";
     private static final String LANGUAGE_QUERY = "CREATE TABLE " + TABLES[LANGUAGES] + " (" +
             LANGUAGE_NAME + " TEXT PRIMARY KEY, " +
             LANGUAGE_CODE + " VARCHAR(2) NOT NULL" +
@@ -127,62 +137,36 @@ public class CalliopeSQLiteOpenHelper extends SQLiteOpenHelper implements WordDa
 
 
     private Context context;
-    //private DatabaseLoadingListener listener;
 
     public CalliopeSQLiteOpenHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
         this.context = context;
     }
 
-    /*public void setDatabaseLoadingListener(DatabaseLoadingListener dbListener){
-        listener = dbListener;
-    }*/
-
     @Override
     public void onCreate(SQLiteDatabase db) {
-        /*if(listener != null){
-            listener.setOperationsCount(TABLES.length);
-            listener.onLoadingStarted();
-        }*/
-
         db.execSQL(VERB_QUERY);
         db.execSQL(CONJUGATION_QUERY);
         db.execSQL(WORD_QUERY);
         db.execSQL(LANGUAGE_QUERY);
+        db.execSQL(COUNTRY_QUERY);
+        db.execSQL(CITY_QUERY);
 
-        //notifyOperationStarted(0, "Verbes");
+        EventBus bus = EventBus.getDefault();
+
+        bus.post(new TableEvent(context.getString(R.string.db_verbs)));
         loadAllVerbs(db, "verbs.txt");
-        //notifyOperationEnded(0);
-
-        //notifyOperationStarted(1, "Conjugaison");
+        bus.post(new TableEvent(context.getString(R.string.db_conjugations)));
         loadAllConjugatedVerbs(db, "conjugation.txt");
-        //notifyOperationEnded(1);
-
-        //notifyOperationStarted(2, "Mots");
+        bus.post(new TableEvent(context.getString(R.string.db_words)));
         loadAllWords(db, "words.txt");
-        //notifyOperationEnded(2);
-
-        //notifyOperationStarted(3, "Places");
-        //notifyOperationEnded(3);
-
+        bus.post(new TableEvent(context.getString(R.string.db_languages)));
         loadAllLanguages(db, "languages.txt");
-
-        /*if(listener != null) {
-            listener.onLoadingEnded();
-        }*/
+        bus.post(new TableEvent(context.getString(R.string.db_countries)));
+        loadAllCountries(db, "countries.txt");
+        bus.post(new TableEvent(context.getString(R.string.db_cities)));
+        loadAllCities(db, "cities.txt");
     }
-
-    /*private void notifyOperationStarted(int operationIndex, String message){
-        if(listener != null){
-            listener.onOperationStarted(operationIndex, message);
-        }
-    }
-
-    private void notifyOperationEnded(int operationIndex){
-        if(listener != null){
-            listener.onOperationEnded(operationIndex);
-        }
-    }*/
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
@@ -326,9 +310,12 @@ public class CalliopeSQLiteOpenHelper extends SQLiteOpenHelper implements WordDa
             while(sc.hasNextLine()){
                 String line = sc.nextLine();
                 String[] fields = line.split(DataFile.SEPARATOR);
-                String code = fields[0];
+                /*String code = fields[0];
                 String extendedCode = fields[1];
-                String name = fields[2];
+                String name = fields[2];*/
+                String code = fields[2];
+                String extendedCode = fields[3];
+                String name = fields[4];
                 ContentValues values = new ContentValues();
 
                 values.put(COUNTRY_CODE, code);
@@ -339,6 +326,45 @@ public class CalliopeSQLiteOpenHelper extends SQLiteOpenHelper implements WordDa
             }
         } catch (IOException e) {
             Log.e("CalliopeSQL", "(loadAllCountries)" + e.getMessage());
+        } finally {
+            if(is != null){
+                try {
+                    is.close();
+                } catch (IOException e) {
+
+                }
+            }
+
+            if(sc != null)
+                sc.close();
+        }
+    }
+
+    private void loadAllCities(SQLiteDatabase db, String assetName){
+        AssetManager assets = this.context.getAssets();
+        InputStream is = null;
+        Scanner sc = null;
+
+        try {
+            is = assets.open(assetName);
+            sc = new Scanner(is);
+
+            while(sc.hasNextLine()){
+                String line = sc.nextLine();
+                String[] fields = line.split(DataFile.SEPARATOR);
+                double latitude = Double.parseDouble(fields[0]);
+                double longitude = Double.parseDouble(fields[1]);
+                String name = fields[2];
+                ContentValues values = new ContentValues();
+
+                values.put(CITY_NAME, name);
+                values.put(CITY_LATITUDE, latitude);
+                values.put(CITY_LONGITUDE, longitude);
+
+                db.insert(TABLES[CITIES], null, values);
+            }
+        } catch (IOException e) {
+            Log.e("CalliopeSQL", "(loadAllCities)" + e.getMessage());
         } finally {
             if(is != null){
                 try {
@@ -449,6 +475,37 @@ public class CalliopeSQLiteOpenHelper extends SQLiteOpenHelper implements WordDa
         return result;
     }
 
+    public CountryInfo findCountry(String country){
+        SQLiteDatabase db = this.getReadableDatabase();
+        //Cursor matchingResults = db.query(TABLES[COUNTRIES], null, "INSTR(" + COUNTRY_NAME + ", ?)", new String[]{ country }, null, null, null);
+        Cursor matchingResults = db.query(TABLES[COUNTRIES], null, COUNTRY_NAME + " LIKE '" + country + "%'", null, null, null, null);
+        CountryInfo result = null;
+
+        if(matchingResults.moveToFirst()){
+            result = new CountryInfo(matchingResults.getString(0), matchingResults.getString(2));
+        }
+
+        db.close();
+        matchingResults.close();
+        return result;
+    }
+
+    public CityInfo findCity(String city){
+        SQLiteDatabase db = this.getReadableDatabase();
+        //Cursor matchingResults = db.query(TABLES[CITIES], null, "INSTR(" + CITY_NAME + ", ?)", new String[]{ city }, null, null, null);
+        Cursor matchingResults = db.query(TABLES[CITIES], null, CITY_NAME + " LIKE '%" + city + "%'", null, null, null, null);
+        CityInfo result = null;
+
+        if(matchingResults.moveToFirst()){
+            result = new CityInfo(matchingResults.getString(1), matchingResults.getDouble(2), matchingResults.getDouble(3));
+            Log.i("Found city", result.getName() + "(" + result.getLatitude() +", " + result.getLongitude() + ")");
+        }
+
+        db.close();
+        matchingResults.close();
+        return result;
+    }
+
     public Word findWord(String w){
         Word result = null;
         Cursor selection;
@@ -474,67 +531,83 @@ public class CalliopeSQLiteOpenHelper extends SQLiteOpenHelper implements WordDa
             }
         }
 
+        CountryInfo country = null;
+        CityInfo city = null;
+        VerbConjugation conjugation = null;
+        LanguageInfo language = null;
         List<Word.WordType> wordTypes = new ArrayList<>();
 
         if(Character.isUpperCase(w.charAt(0))){
-            wordTypes.add(Word.WordType.PROPER_NAME);
-
             if(isAFirstName(w)){
                 wordTypes.add(Word.WordType.FIRSTNAME);
             }
 
-            return new Word(w, wordTypes);
-        }
+            // TOCHECK: privilegier les noms de villes aux noms des pays ?
+            city = findCity(w);
+            country = findCountry(w);
 
-        if(w.endsWith("ième")){
-            boolean isNumericalPosition = true;
+            if(city != null){
+                wordTypes.add(Word.WordType.CITY);
+            } else if(country != null) {
+                wordTypes.add(Word.WordType.COUNTRY);
+            } else {
+                wordTypes.add(Word.WordType.PROPER_NAME);
+            }
 
-            for(String exclude: excludeNumericalPosition){
-                if(w.startsWith(exclude)){
-                    isNumericalPosition = false;
-                    break;
+            //return new Word(w, wordTypes);
+        } else {
+            if(w.endsWith("ième")){
+                boolean isNumericalPosition = true;
+
+                for(String exclude: NOT_A_NUMERICAL_POSITION){
+                    if(w.startsWith(exclude)){
+                        isNumericalPosition = false;
+                        break;
+                    }
+                }
+
+                if(isNumericalPosition) {
+                    wordTypes.add(Word.WordType.NUMERICAL_POSITION);
                 }
             }
 
-            if(isNumericalPosition) {
-                wordTypes.add(Word.WordType.NUMERICAL_POSITION);
+            conjugation = findConjugatedVerb(w);
+
+            if(conjugation != null){
+                wordTypes.add(Word.WordType.VERB);
+
+                if(conjugation.getVerb() != null && conjugation.getVerb().isAuxiliary()){
+                    wordTypes.add(Word.WordType.AUXILIARY);
+                }
             }
-        }
 
-        VerbConjugation conjugation = findConjugatedVerb(w);
+            language = findLanguage(w);
 
-        if(conjugation != null){
-            wordTypes.add(Word.WordType.VERB);
-
-            if(conjugation.getVerb() != null && conjugation.getVerb().isAuxiliary()){
-                wordTypes.add(Word.WordType.AUXILIARY);
+            if(language != null){
+                wordTypes.add(Word.WordType.LANGUAGE);
             }
-        }
 
-        LanguageInfo language = findLanguage(w);
+            SQLiteDatabase db = this.getReadableDatabase();
+            selection = db.query(TABLES[WORDS], null, WORD_NAME + " = ?", new String[]{ w }, null, null, null);
 
-        if(language != null){
-            wordTypes.add(Word.WordType.LANGUAGE);
-        }
+            if(selection.moveToFirst()){
+                selection.moveToFirst();
+                Word tmpResult = CalliopeWord.buildFromCursor(selection);
+                wordTypes.addAll(tmpResult.getTypes());
+            }
 
-        SQLiteDatabase db = this.getReadableDatabase();
-        //selection.close();
-        selection = db.query(TABLES[WORDS], null, WORD_NAME + " = ?", new String[]{ w }, null, null, null);
-
-        if(selection.moveToFirst()){
-            selection.moveToFirst();
-            Word tmpResult = CalliopeWord.buildFromCursor(selection);
-            wordTypes.addAll(tmpResult.getTypes());
+            selection.close();
+            db.close();
         }
 
         if(wordTypes.size() > 0) {
             result = new CalliopeWord(w, wordTypes);
             result.setVerbInfo(conjugation);
             result.setLanguageInfo(language);
+            result.setCountryInfo(country);
+            result.setCityInfo(city);
         }
 
-        selection.close();
-        db.close();
         return result;
     }
 

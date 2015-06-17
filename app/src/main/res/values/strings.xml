@@ -17,4 +17,11 @@
     <string name="submit_text_source">Ajouter</string>
     <string name="action_import_text">Ajouter texte</string>
     <string name="action_import_picture">Importer image</string>
+
+    <string name="db_verbs">Verbes</string>
+    <string name="db_conjugations">Conjugaisons</string>
+    <string name="db_words">Mots</string>
+    <string name="db_languages">Langues</string>
+    <string name="db_countries">Pays</string>
+    <string name="db_cities">Villes</string>
 </resources>
